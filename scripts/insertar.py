@@ -57,6 +57,7 @@ def extraerDatos(ruta):
 	textoHTML= extraer.leerArchivo(ruta)
 	#Se envia el html para obtener solo los datos
 	objHTML.feed(textoHTML)
+	print "POSCION-->",objHTML.getpos()
 	#Con la lista creada se arma un Json
 	extraer.ArmarJson()
 	#Se prueba la informacio
@@ -70,7 +71,7 @@ def crearSQL():
 	
 
 if __name__ == '__main__':
-	extraerDatos("../informes/m10-0001.txt.html")
+	extraerDatos("../informes/m10-0002.txt.html")
 	crearcsv()
-	crearSQL()
-	insertar()
+	# crearSQL()
+	# insertar()
