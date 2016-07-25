@@ -5,12 +5,19 @@ global matriz
 matriz=[[None] * 7 for i in range(2)]
 
 def insertar():
-	print "Insertando datos desde csv"
-	csv=os.popen("echo | psql -U postgres -h localhost -d patologiaHUV -f insertarFROMcsv.sql").read().split()
-	if(csv[0]=="COPY"):
-		print "Insercion exitosa", csv
-	else:
-		print "Ha fallado la insercion"
+	try:
+		print "Insertando datos desde csv"
+		csv=os.popen("echo | psql -U postgres -h localhost -d patologiaHUV -f insertarFROMcsv.sql").read()
+		if(csv[:4]=="COPY"):
+			print "Insercion exitosa", csv
+		else:
+			raise NameError('NoExito')
+	except NameError:
+		print "Ha fallado la insercion, error de los datos: posible llave duplicada o tipo de datos"
+	except Exception, e:
+		print "Ha fallado la insercion: error general",str(e)
+
+	
 
 def crearcsv():
 	global matriz
@@ -55,10 +62,15 @@ def extraerDatos(ruta):
 	#Se prueba la informacio
 	# print extraer.getHistoriaClinica()
 
-
+def crearSQL():
+	print "Creando Archivo SQL COPY..."
+	ruta=os.path.abspath('registro.csv')
+	sql=open('insertarFROMcsv.sql', 'w')
+	sql.write ("COPY muestra_html FROM '"+ruta+"' DELIMITER '|' CSV HEADER;")
 	
 
 if __name__ == '__main__':
 	extraerDatos("../informes/m10-0001.txt.html")
 	crearcsv()
+	crearSQL()
 	insertar()
