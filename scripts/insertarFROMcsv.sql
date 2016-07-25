@@ -1,0 +1,1 @@
+COPY muestra_html FROM '/home/registro/Documentos/Repositorios/PatologiaInsertion/scripts/registro.csv' DELIMITER '|' CSV HEADER;

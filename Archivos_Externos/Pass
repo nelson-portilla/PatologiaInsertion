@@ -1,0 +1,17 @@
+1. Ingresar y descargar RedCap 
+https://iwg.devguard.com/trac/redcap
+Usuario: paolaandrea_collazos
+Contraseña: paolaandrea_collazos
+
+
+Ingresa a phpMyAdmin
+
+http://patologia.univalle.edu.co/phpMyAdmin
+usuario:root
+contraseña: rpcc1
+
+
+Base de datos en MySQL
+usuario:redcap
+Nombre:redcap
+contraseña:rpcc1

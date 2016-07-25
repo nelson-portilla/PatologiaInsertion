@@ -1,0 +1,25 @@
+﻿-- Table: muestra
+
+-- DROP TABLE muestra;
+
+CREATE TABLE muestra_html
+(	
+  id integer NOT NULL,
+  idpaciente integer NOT NULL, -- Identificador del paciente al cual corresponde la muestra
+  numeroregistro character varying(20) NOT NULL, -- Código alfanumérico único asignado a la muestra.  Es de la forma:...
+  descmacro text, -- Descripción macroscópica
+  descmicro text, -- Descripción microscópica
+  diagnostico text, -- Diagnóstico
+  
+  CONSTRAINT muestra_html_pkey PRIMARY KEY (id),
+  
+  CONSTRAINT muestra_idpaciente_fkey FOREIGN KEY (idpaciente)
+      REFERENCES paciente (id) MATCH SIMPLE
+      ON UPDATE CASCADE ON DELETE CASCADE
+)
+WITH (
+  OIDS=FALSE
+);
+
+
+

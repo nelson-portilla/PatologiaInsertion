@@ -1,0 +1,35 @@
+smtp.gmail.com
+
+51 200 000
+++++
+smtp_use_tls=yes
+smtp_sasl_auth_enable = yes
+smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+smtp_sasl_security_options = noanonymous
+smtp_sasl_tls_security_options = noanonymous
+smtp_tls_policy_maps = hash:/etc/postfix/tls_policy
+
+relayhost = [smtp.gmail.com]:587
+mynetworks = 192.168.216.21 127.0...
+++++
+sudo nano /etc/postfix/sasl_passwd
+[smtp.gmail.com]:587 registro--@correounivalle.edu.co:passw
+++++
+sudo nano /etc/postfix/tls_policy
+[smtp.gmail.com]:587 encrypt
+++++
+sudo postmap /etc/postfix/sasl_passwd
+sudo service postfix restart
+sudo chmod 600 /etc/postfix/sasl_passwd*
+sudo chown postfix.postfix /etc/postfix/sasl_passwd*
+
++++PRUEBAS+++
+echo "Prueba desde Servidor Fox" | mail -s "Enviado con Postfix desde FOX" -a "From: registro" nelsonph88@gmail.com
+
+
+
+sudo sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list.d/official-package-repositories.list
+
+sudo sed -i -e 's/archive.ubuntu.com\|security.ubuntu.com/old-releases.ubuntu.com/g' /etc/apt/sources.list
+
+sudo echo "deb http://archive.ubuntu.com/ubuntu/ trusty main universe restricted multiverse" > /etc/apt/sources.list; sudo apt-get update

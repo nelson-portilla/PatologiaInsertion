@@ -1,0 +1,52 @@
+#By: Nelson Portilla
+import os,sys
+global informe;
+from HTMLParser import HTMLParser
+informe=""
+
+
+class LecturaHTML(HTMLParser):
+        def handle_starttag(self, tag, attrs):
+            print "Encountered a start tag:", tag
+        def handle_endtag(self, tag):
+            print "Encountered an end tag :", tag
+        def handle_data(self, data):
+            print "Encountered some data  :", data
+		#Se abre el archivo y se almacena el contenido
+		def leerArchivo(path):
+			global informe
+			informe=os.open(path, 'r').read()
+			return informe
+		#Se Obtiene la descripcion macroscopica
+		def getMacro():
+			global informe
+			None
+		#Se Obtiene la descripcion microscopica
+		def getMicro():
+			global informe
+			None
+		#Se Obtiene la descripcion diagnostico
+		def getDiagnostico():
+			global informe
+			None
+
+		#Se Obtiene la Historia Clinica
+		def getHistoriaClinica():
+			global informe
+			None
+
+		#Se obtiene el id del paciente de acuerdo a la historia clinica
+		def getId_Paciente(historiac):
+			global informe
+			None
+
+		#se obtiene el id de la tabla Muestra
+		def getId_Muestra():
+			global informe
+	None
+
+if __name__ == '__main__':
+	insertar("a","b")
+	objHTML = LecturaHTML()
+	textoHTML=objHTML.leerArchivo('../informes/m10-0001.txt.html')
+	objHTML.feed(textoHTML)

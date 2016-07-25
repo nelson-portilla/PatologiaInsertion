@@ -1,0 +1,34 @@
+Ver usuarios y grupos:
+
+ver todos los grupos
+cat /etc/group
+
+ver a los grupos donde perteneces el actual user
+groups
+
+agregar a un grupo
+sudo useradd name
+sudo usermod -a -G nameGrupo <some_user>
+
+sudo chgrp -R nameGroup folder
+sudo chmod -R g+w folder
+
+sudo find /var/www -type d -exec chmod 2775 {} \;
+sudo find /var/www -type f -exec chmod ug+rw {} \;
+
+
+DIRECTORIOS
+/var/www/redcap/temp/
+/var/www/redcap/edocs/
+
+---ABRIR CRON EDIT--
+sudo crontab -e
+
+agregar:
+# REDCap Cron Job (runs every minute)
+* * * * * /usr/bin/php /var/www/redcap/cron.php > /dev/null
+
+
+
+
+
