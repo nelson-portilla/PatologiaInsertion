@@ -3,63 +3,72 @@ import os,sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 import codecs
-global informe, lista, jsonDatos, switch, dataMacro, dataMicro, dataDiag
+global informe, lista, jsonDatos, switch, dataMacro, dataMicro, dataDiag, outputtxt, textoPlano
 from HTMLParser import HTMLParser
-informe=""
+informe=textoPlano=""
 lista=[]
 switch=0
 dataDiag=dataMicro=dataMacro=""
-jsonDatos={	'NumeroRegistro':"",
+jsonDatos= {'NumeroRegistro':"",
 			'HistoriaClinica': "",
 			'DescMacro':"",
 			'DescMicro':"",
 			'DescDiagnostico':""
 			}
 
+outputtxt=open("output1.txt", 'w')
+
 #Clase para leer el html, se obtienen solo el Data, se limpia y se arma la lista.
 class LecturaHTML(HTMLParser):
-
         def handle_data(self, data):        	
-        	global switch, dataMacro, dataMicro, dataDiag
-        	if data=='DESCRIPCION MACROSCOPICA':
-        		switch=1
+        	global switch, dataMacro, dataMicro, dataDiag, textoPlano        	
+			#Se limpia el texto, se eliminan saltos de linea y espacios.
+        	data=data.replace('\r\n',"").replace("\t", "").replace("\n", " ").strip()
+        	
+        	if data!="":
+        		# escribirArchivo(data)
+        		textoPlano+=data+" "
 
-        	if data=='DESCRIPCION MICROSCOPICA':
-        		switch=2
-        		
-        	if data=='DIAGNOSTICO:':
-        		switch=3
-        		
+	        	if data=='DESCRIPCION MACROSCOPICA':
+	        		switch=1	        		
 
-        	if switch==1:
-        		dataMacro+=data
+	        	if data=='DESCRIPCION MICROSCOPICA':
+	        		switch=2
+	        		
+	        	if data=='DIAGNOSTICO:':
+	        		switch=3        		
 
-        	if switch==2:
-        		dataMicro+=data
+	        	if switch==0:
+	        		lista.append(data)
+				
+			if switch==1:				
+				dataMacro+=" "+data
 
-        	if switch==3:
-        		dataDiag+=data
-        		#CODIGO PARA PARADA, Analizar TM33464 M7387
-        		
+	        	if switch==2:
+	        		dataMicro+=" "+data
 
-        	if((data.replace('\r\n',"")).replace("\t", "").replace("\n", " ")!=""):
-        		lista.append(data.strip())
-
+	        	if switch==3:
+	        		#CODIGO PARA PARADA, Analizar TM33464 M7387
+	        		if any(char.isdigit() for char in data[:2]):
+	        			switch=4
+	        		else:
+	        			dataDiag+=" "+data
         
 def ArmarJson():
-	global lista, jsonDatos
-	# print lista
+	global lista, jsonDatos, dataMacro, dataMicro, dataDiag
+	
 	jsonDatos['NumeroRegistro']=lista[0].replace(".txt", "")
 	jsonDatos['HistoriaClinica']=lista[1]
-	jsonDatos['DescMacro']=lista[7]
-	jsonDatos['DescMicro']=lista[9]
-	jsonDatos['DescDiagnostico']=lista[11]
+	#Se Agregan al diccionario Eliminando el titulo "Desc Macro...", etc.
+	jsonDatos['DescMacro']=dataMacro[25:]
+	jsonDatos['DescMicro']=dataMicro[25:]
+	jsonDatos['DescDiagnostico']=dataDiag[13:]
 	
-	print "MACRO..>",dataMacro
-	print "MACRO..>",dataMicro
-	print "MACRO..>",dataDiag
-	
-	# print jsonDatos		
+	print "NR..>",jsonDatos['NumeroRegistro']
+	print "HC..>",jsonDatos['HistoriaClinica']
+	print "MACRO..>",jsonDatos['DescMacro']
+	print "MiCRO..>",jsonDatos['DescMicro']
+	print "Diag..>",jsonDatos['DescDiagnostico']
 			
 #Se obtiene el numero de registro
 def getNumeroRegistro():
@@ -94,7 +103,7 @@ def getId_Muestra():
 	return csv[2]
 
 def getHTML():
-	return informe
+	return textoPlano
 
 #Se abre el archivo y se almacena el contenido
 def leerArchivo(ruta):
@@ -102,6 +111,14 @@ def leerArchivo(ruta):
 	informe=open(ruta, 'r').read()
 	return informe
 
+def escribirArchivo(datos):
+	global outputtxt
+	outputtxt.write(datos)
+	#outputtxt.write("\n")
+
+def cerrarArchivo():
+	global outputtxt
+	outputtxt.close()
 
 if __name__ == '__main__':
 	None

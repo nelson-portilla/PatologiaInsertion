@@ -29,6 +29,14 @@ def crearcsv():
 	matriz[0][5]="diagnostico"
 	matriz[0][6]="html"
 
+	# matriz[0][0]=extraer.getId_Muestra()
+	# matriz[0][1]=extraer.getId_Paciente()
+	# matriz[0][2]=extraer.getNumeroRegistro()
+	# matriz[0][3]=extraer.getMacro()
+	# matriz[0][4]=extraer.getMicro()
+	# matriz[0][5]=extraer.getDiagnostico()
+	# matriz[0][6]="HTML"#str(extraer.getHTML())
+
 	for i in range(1,2):
 		matriz[i][0]=extraer.getId_Muestra()
 		matriz[i][1]=extraer.getId_Paciente()
@@ -36,10 +44,13 @@ def crearcsv():
 		matriz[i][3]=extraer.getMacro()
 		matriz[i][4]=extraer.getMicro()
 		matriz[i][5]=extraer.getDiagnostico()
-		matriz[i][6]="HTML"#extraer.getHTML()
+		matriz[i][6]=extraer.getHTML()
 	
 	
 	reg=open("registro.csv", 'w')
+
+	# for linea in matriz:
+	# 	reg.write("|".join(linea))
 	for idx, linea in enumerate(matriz):
 		if idx==len(matriz)-1:			
 			reg.write("|".join(linea))
@@ -57,8 +68,8 @@ def extraerDatos(ruta):
 	textoHTML= extraer.leerArchivo(ruta)
 	#Se envia el html para obtener solo los datos
 	objHTML.feed(textoHTML)
-	print "POSCION-->",objHTML.getpos()
 	#Con la lista creada se arma un Json
+	extraer.cerrarArchivo()
 	extraer.ArmarJson()
 	#Se prueba la informacio
 	# print extraer.getHistoriaClinica()
@@ -73,5 +84,5 @@ def crearSQL():
 if __name__ == '__main__':
 	extraerDatos("../informes/m10-0002.txt.html")
 	crearcsv()
-	# crearSQL()
-	# insertar()
+	crearSQL()
+	insertar()
