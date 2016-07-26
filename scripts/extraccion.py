@@ -3,7 +3,7 @@ import os,sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 import codecs
-global informe, lista, jsonDatos, switch, dataMacro, dataMicro, dataDiag, outputtxt, textoPlano
+global informe, lista, jsonDatos, switch, dataMacro, dataMicro, dataDiag, textoPlano
 from HTMLParser import HTMLParser
 informe=textoPlano=""
 lista=[]
@@ -16,7 +16,7 @@ jsonDatos= {'NumeroRegistro':"",
 			'DescDiagnostico':""
 			}
 
-outputtxt=open("output1.txt", 'w')
+
 
 #Clase para leer el html, se obtienen solo el Data, se limpia y se arma la lista.
 class LecturaHTML(HTMLParser):
@@ -56,7 +56,6 @@ class LecturaHTML(HTMLParser):
         
 def ArmarJson():
 	global lista, jsonDatos, dataMacro, dataMicro, dataDiag
-	
 	jsonDatos['NumeroRegistro']=lista[0].replace(".txt", "")
 	jsonDatos['HistoriaClinica']=lista[1]
 	#Se Agregan al diccionario Eliminando el titulo "Desc Macro...", etc.
@@ -64,11 +63,12 @@ def ArmarJson():
 	jsonDatos['DescMicro']=dataMicro[25:]
 	jsonDatos['DescDiagnostico']=dataDiag[13:]
 	
-	print "NR..>",jsonDatos['NumeroRegistro']
-	print "HC..>",jsonDatos['HistoriaClinica']
-	print "MACRO..>",jsonDatos['DescMacro']
-	print "MiCRO..>",jsonDatos['DescMicro']
-	print "Diag..>",jsonDatos['DescDiagnostico']
+	print "==> Datos cargados ..OK"
+	# print "NR..>",jsonDatos['NumeroRegistro']
+	# print "HC..>",jsonDatos['HistoriaClinica']
+	# print "MACRO..>",jsonDatos['DescMacro']
+	# print "MiCRO..>",jsonDatos['DescMicro']
+	# print "Diag..>",jsonDatos['DescDiagnostico']
 			
 #Se obtiene el numero de registro
 def getNumeroRegistro():
@@ -109,16 +109,17 @@ def getHTML():
 def leerArchivo(ruta):
 	global informe
 	informe=open(ruta, 'r').read()
+	print "==> Leyendo archivo: ", ruta+" ..OK"
 	return informe
 
-def escribirArchivo(datos):
-	global outputtxt
-	outputtxt.write(datos)
-	#outputtxt.write("\n")
-
-def cerrarArchivo():
-	global outputtxt
+def escribirArchivo():
+	global textoPlano, jsonDatos
+	nr=jsonDatos['NumeroRegistro']+".txt"	
+	outputtxt=open("../informesEnTXT/"+nr, 'w')
+	outputtxt.write(textoPlano)
+	outputtxt.write("\n")
 	outputtxt.close()
+	print "==> Convirtiendo Archivo : ",nr+" ..OK"
 
 if __name__ == '__main__':
 	None

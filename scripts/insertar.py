@@ -6,7 +6,7 @@ matriz=[[None] * 7 for i in range(2)]
 
 def insertar():
 	try:
-		print "Insertando datos desde csv"
+		print "Insertando datos desde csv..."
 		csv=os.popen("echo | psql -U postgres -h localhost -d patologiaHUV -f insertarFROMcsv.sql").read()
 		if(csv[:4]=="COPY"):
 			print "Insercion exitosa", csv
@@ -29,14 +29,6 @@ def crearcsv():
 	matriz[0][5]="diagnostico"
 	matriz[0][6]="html"
 
-	# matriz[0][0]=extraer.getId_Muestra()
-	# matriz[0][1]=extraer.getId_Paciente()
-	# matriz[0][2]=extraer.getNumeroRegistro()
-	# matriz[0][3]=extraer.getMacro()
-	# matriz[0][4]=extraer.getMicro()
-	# matriz[0][5]=extraer.getDiagnostico()
-	# matriz[0][6]="HTML"#str(extraer.getHTML())
-
 	for i in range(1,2):
 		matriz[i][0]=extraer.getId_Muestra()
 		matriz[i][1]=extraer.getId_Paciente()
@@ -49,8 +41,6 @@ def crearcsv():
 	
 	reg=open("registro.csv", 'w')
 
-	# for linea in matriz:
-	# 	reg.write("|".join(linea))
 	for idx, linea in enumerate(matriz):
 		if idx==len(matriz)-1:			
 			reg.write("|".join(linea))
@@ -59,7 +49,7 @@ def crearcsv():
 			reg.write("\n")
 
 	reg.close()
-	# print matriz
+	print "==> Creando Archivo CSV ..OK"
 
 def extraerDatos(ruta):
 	#Se crea el Objeto de la clase	
@@ -69,16 +59,16 @@ def extraerDatos(ruta):
 	#Se envia el html para obtener solo los datos
 	objHTML.feed(textoHTML)
 	#Con la lista creada se arma un Json
-	extraer.cerrarArchivo()
 	extraer.ArmarJson()
-	#Se prueba la informacio
-	# print extraer.getHistoriaClinica()
+	#Se Convierte de HTML A TXT
+	extraer.escribirArchivo()
+	
 
 def crearSQL():
-	print "Creando Archivo SQL COPY..."
 	ruta=os.path.abspath('registro.csv')
 	sql=open('insertarFROMcsv.sql', 'w')
 	sql.write ("COPY muestra_html FROM '"+ruta+"' DELIMITER '|' CSV HEADER;")
+	print "==> Creando SQL-File-COPY ..OK"
 	
 
 if __name__ == '__main__':
