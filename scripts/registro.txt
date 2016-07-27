@@ -1,2 +1,0 @@
-id|idpaciente|numeroregistro|descmacro|descmicro|diagnostico|html
-68|8|m10-0002| En formol se reciben múltiples fragmentos de tejido blanquecino y blando, el mayor de los cuales mide 0.1x0.1 cm. Se procesa todo en una canastilla.| Se trata de frgmentos de quertina sin representación de células.| Parotida sin otra especificación. Biopsia por tru cut: INADECUADO PARA DIAGNOSTICO.|html

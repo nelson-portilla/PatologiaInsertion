@@ -2,7 +2,7 @@ import os,sys
 #from extraccion as t import *
 import extraccion as extraer
 global matriz
-matriz=[[None] * 7 for i in range(2)]
+matriz=[[None] * 6 for i in range(2)]
 
 def insertar():
 	try:
@@ -21,22 +21,37 @@ def insertar():
 
 def crearcsv():
 	global matriz
-	matriz[0][0]="id"
-	matriz[0][1]="idpaciente"
-	matriz[0][2]="numeroregistro"
-	matriz[0][3]="descmacro"
-	matriz[0][4]="descmicro"
-	matriz[0][5]="diagnostico"
-	matriz[0][6]="html"
+	# matriz[0][0]="id"
+	# matriz[0][1]="historiaclinica"
+	# matriz[0][2]="numeroregistro"
+	# matriz[0][3]="descmacro"
+	# matriz[0][4]="descmicro"
+	# matriz[0][5]="diagnostico"
+	# matriz[0][6]="html"
+
+	# for i in range(1,2):
+	# 	matriz[i][0]='1'
+	# 	matriz[i][1]=extraer.getHistoriaClinica()
+	# 	matriz[i][2]=extraer.getNumeroRegistro()
+	# 	matriz[i][3]=extraer.getMacro()
+	# 	matriz[i][4]=extraer.getMicro()
+	# 	matriz[i][5]=extraer.getDiagnostico()
+	# 	matriz[i][6]=extraer.getHTML()matriz[0][0]="id"
+	
+	matriz[0][0]="historiaclinica"
+	matriz[0][1]="numeroregistro"
+	matriz[0][2]="descmacro"
+	matriz[0][3]="descmicro"
+	matriz[0][4]="diagnostico"
+	matriz[0][5]="html"
 
 	for i in range(1,2):
-		matriz[i][0]=extraer.getId_Muestra()
-		matriz[i][1]=extraer.getId_Paciente()
-		matriz[i][2]=extraer.getNumeroRegistro()
-		matriz[i][3]=extraer.getMacro()
-		matriz[i][4]=extraer.getMicro()
-		matriz[i][5]=extraer.getDiagnostico()
-		matriz[i][6]=extraer.getHTML()
+		matriz[i][0]=extraer.getHistoriaClinica()
+		matriz[i][1]=extraer.getNumeroRegistro()
+		matriz[i][2]=extraer.getMacro()
+		matriz[i][3]=extraer.getMicro()
+		matriz[i][4]=extraer.getDiagnostico()
+		matriz[i][5]=extraer.getHTML()
 	
 	
 	reg=open("registro.csv", 'w')
