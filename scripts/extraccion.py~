@@ -51,7 +51,6 @@ class LecturaHTML(HTMLParser):
 	        		switch=3        		
 
 	        	if switch==0:
-	        		print "ENTROOOO"
 	        		lista.append(data)
 	        		print lista
 				
@@ -71,7 +70,7 @@ class LecturaHTML(HTMLParser):
 		print "hola";
         
 def ArmarJson():
-	global lista, jsonDatos, dataMacro, dataMicro, dataDiag,switch
+	global lista, jsonDatos, dataMacro, dataMicro, dataDiag
 	jsonDatos['NumeroRegistro']=lista[0].replace(".txt", "")
 	jsonDatos['HistoriaClinica']=lista[1]
 	#Se Agregan al diccionario Eliminando el titulo "Desc Macro...", etc.
@@ -79,9 +78,7 @@ def ArmarJson():
 	jsonDatos['DescMicro']=dataMicro[25:]
 	jsonDatos['DescDiagnostico']=dataDiag[13:]
 	
-	lista=[]
-	switch=0
-	dataDiag=dataMicro=dataMacro=textoPlano=""
+	
 	print "==> Datos cargados ..OK"
 	print "NR..>",jsonDatos['NumeroRegistro']
 	print "HC..>",jsonDatos['HistoriaClinica']
