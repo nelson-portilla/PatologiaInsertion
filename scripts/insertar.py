@@ -21,8 +21,8 @@ def insertar():
 def crearMatriz(numArchivos):
 	global matriz
 	matriz=[[None] * 6 for i in range(numArchivos+1)]
-	matriz[0][0]="historiaclinica"
-	matriz[0][1]="numeroregistro"
+	matriz[0][0]="numeroregistro"
+	matriz[0][1]="historiaclinica"
 	matriz[0][2]="descmacro"
 	matriz[0][3]="descmicro"
 	matriz[0][4]="diagnostico"
@@ -36,17 +36,8 @@ def contarArchivos(ruta):
 	return count
 
 def crearcsv(i):
-	
-
-	# for i in range(1,len(matriz)+1):
-	# 	matriz[i][0]=extraer.getHistoriaClinica()
-	# 	matriz[i][1]=extraer.getNumeroRegistro()
-	# 	matriz[i][2]=extraer.getMacro()
-	# 	matriz[i][3]=extraer.getMicro()
-	# 	matriz[i][4]=extraer.getDiagnostico()
-	# 	matriz[i][5]=extraer.getHTML()
-	matriz[i][0]=extraer.getHistoriaClinica()
-	matriz[i][1]=extraer.getNumeroRegistro()
+	matriz[i][0]=extraer.getNumeroRegistro()
+	matriz[i][1]=extraer.getHistoriaClinica()
 	matriz[i][2]=extraer.getMacro()
 	matriz[i][3]=extraer.getMicro()
 	matriz[i][4]=extraer.getDiagnostico()
@@ -102,8 +93,5 @@ if __name__ == '__main__':
 	crearSQL()
 	insertar()
 	
-	
-
-	# extraerDatos("../informes/m10-0002.txt.html")
 	
 	
