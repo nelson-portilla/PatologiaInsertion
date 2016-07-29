@@ -18,21 +18,23 @@ jsonDatos= {'NumeroRegistro':"",
 			}
 
 
+def inicializar():
+	global informe, lista, jsonDatos, switch, dataMacro, dataMicro, dataDiag, textoPlano
+	print "Limpiando..." 
+	informe=textoPlano=""
+	lista=[]
+	switch=0
+	dataDiag=dataMicro=dataMacro=""
+	jsonDatos= {'NumeroRegistro':"",
+			'HistoriaClinica': "",
+			'DescMacro':"",
+			'DescMicro':"",
+			'DescDiagnostico':"",
+			'Texto':""
+			}
 
 #Clase para leer el html, se obtienen solo el Data, se limpia y se arma la lista.
 class LecturaHTML(HTMLParser):
-	def inicializar(self): 
-	        self.informe=textoPlano=""
-		self.lista=[]
-		self.switch=0
-		self.dataDiag=dataMicro=dataMacro=""
-		self.jsonDatos= {'NumeroRegistro':"",
-				'HistoriaClinica': "",
-				'DescMacro':"",
-				'DescMicro':"",
-				'DescDiagnostico':"",
-				'Texto':""
-				}
 
         def handle_data(self, data):        	
         	global switch, dataMacro, dataMicro, dataDiag, textoPlano        	
@@ -68,33 +70,41 @@ class LecturaHTML(HTMLParser):
 	        		else:
 	        			dataDiag+=" "+data
 	def __del__(self):
-		print "hola";
+		print "ok...";
         
-def ArmarJson():
+def ArmarJson(ruta):
 	global lista, jsonDatos, dataMacro, dataMicro, dataDiag,switch,textoPlano
-	jsonDatos['NumeroRegistro']=lista[0].replace(".txt", "")
-	
-	#VALIDAR SI EXISTE HOSTORIA CLINCICA
-	if lista[1].isdigit():
-		jsonDatos['HistoriaClinica']=lista[1]
-	else:
-		jsonDatos['HistoriaClinica']=''
+	try:
+		jsonDatos['NumeroRegistro']=ruta[12:].replace(".txt.html", "")
+				
+		#VALIDAR SI EXISTE HOSTORIA CLINCICA
+		if len(lista)>0:
+			if lista[1].isdigit():
+				jsonDatos['HistoriaClinica']=lista[1]
+			else:
+				jsonDatos['HistoriaClinica']=''
+		else:
+			jsonDatos['HistoriaClinica']=''
 
-	#Se Agregan al diccionario Eliminando el titulo "Desc Macro...", etc.
-	jsonDatos['DescMacro']=dataMacro[25:]
-	jsonDatos['DescMicro']=dataMicro[25:]
-	jsonDatos['DescDiagnostico']=dataDiag[13:]
-	jsonDatos['Texto']=textoPlano
-	
-	lista=[]
-	switch=0
-	dataDiag=dataMicro=dataMacro=textoPlano=""
-	print "==> Datos cargados ..OK"
-	# print "NR..>",jsonDatos['NumeroRegistro']
-	# print "HC..>",jsonDatos['HistoriaClinica']
-	# print "MACRO..>",jsonDatos['DescMacro']
-	# print "MiCRO..>",jsonDatos['DescMicro']
-	# print "Diag..>",jsonDatos['DescDiagnostico']
+
+		#Se Agregan al diccionario Eliminando el titulo "Desc Macro...", etc.
+		jsonDatos['DescMacro']=dataMacro[25:]
+		jsonDatos['DescMicro']=dataMicro[25:]
+		jsonDatos['DescDiagnostico']=dataDiag[13:]
+		jsonDatos['Texto']=textoPlano
+		
+		# lista=[]
+		# switch=0
+		# dataDiag=dataMicro=dataMacro=textoPlano=""
+		print "==> Datos cargados ..OK"
+		# print "NR..>",jsonDatos['NumeroRegistro']
+		# print "HC..>",jsonDatos['HistoriaClinica']
+		# print "MACRO..>",jsonDatos['DescMacro']
+		# print "MiCRO..>",jsonDatos['DescMicro']
+		# print "Diag..>",jsonDatos['DescDiagnostico']
+
+	except IndexError, e:
+		print "ENTRO en IndexError", lista, jsonDatos['NumeroRegistro']
 			
 #Se obtiene el numero de registro
 def getNumeroRegistro():

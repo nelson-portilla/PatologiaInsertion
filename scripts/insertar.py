@@ -30,8 +30,14 @@ def crearMatriz(numArchivos):
 	print "==> Creando Matriz ..OK"
 	
 def contarArchivos(ruta):
-	count=2
+	count=0
 	count=len([name for name in os.listdir(ruta) if os.path.isfile(os.path.join(ruta, name))])
+	# count=([name for name in os.listdir(ruta) if os.path.isdir(os.path.join(ruta, name))])
+	# print count
+	# for folder in count:
+	# 	contents = os.listdir(os.path.join(ruta,folder)) # get list of contents
+	# 	if len(contents) > 20:
+	# 		print (folder,len(contents))
 	print "==> Contando Archivos ..OK", count
 	return count
 
@@ -44,30 +50,31 @@ def crearcsv(i):
 	matriz[i][5]=extraer.getHTML()
 
 def escribirCSV():
+	print "MATRIZ: ",len (matriz)
 	reg=open("registro.csv", 'w')
 
 	for idx, linea in enumerate(matriz):
 		if idx==len(matriz)-1:			
 			reg.write("|".join(linea))
-		else:
+		else:			
 			reg.write("|".join(linea))
 			reg.write("\n")
 
 	reg.close()
 	print "==> Creando Archivo CSV ..OK"
 
-def extraerDatos(ruta):
+def extraerDatos(datos, ruta):
 	#Se crea el Objeto de la clase	
 	objHTML = extraer.LecturaHTML()
 	#Se Lee el archivo
-	textoHTML= extraer.leerArchivo(ruta)
+	textoHTML= extraer.leerArchivo(datos)
 	#Se envia el html para obtener solo los datos
 	objHTML.feed(textoHTML)
 	#Con la lista creada se arma un Json
-	extraer.ArmarJson()
+	extraer.ArmarJson(ruta)
 	#Se Convierte de HTML A TXT
 	extraer.escribirArchivo()
-	objHTML.inicializar()
+	
 	
 
 def crearSQL():
@@ -79,16 +86,21 @@ def crearSQL():
 
 if __name__ == '__main__':
 	i=1   
-	totalRegistros=contarArchivos("../informes")
-	crearMatriz(totalRegistros)
+	# totalRegistros=contarArchivos("../../../informes-patologia")
 	path = '../informes/*.html'   
+	# path = '../Informes_Revisar/*.html'   
 	files=glob.glob(path)   
+	# totalRegistros=contarArchivos("../informes")
+	totalRegistros=len(files)
+	crearMatriz(totalRegistros)
 	for file in files:
 		print "\n==> Enviando archivo: ", file+"..."+str(i)
 		filedata=open(file, 'r').read()
-		extraerDatos(filedata)
-		crearcsv(i)		
+		extraerDatos(filedata, file)
+		crearcsv(i)
+		extraer.inicializar()		
 		i+=1
+		print "Archivo Numero: ",i
 	escribirCSV()	
 	crearSQL()
 	insertar()

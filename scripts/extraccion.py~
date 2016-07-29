@@ -13,14 +13,16 @@ jsonDatos= {'NumeroRegistro':"",
 			'HistoriaClinica': "",
 			'DescMacro':"",
 			'DescMicro':"",
-			'DescDiagnostico':""
+			'DescDiagnostico':"",
+			'Texto':""
 			}
 
 
 
 #Clase para leer el html, se obtienen solo el Data, se limpia y se arma la lista.
 class LecturaHTML(HTMLParser):
-	def inicializar(self): 
+	def inicializar(self):
+		print "Limpiando..." 
 	        self.informe=textoPlano=""
 		self.lista=[]
 		self.switch=0
@@ -29,7 +31,8 @@ class LecturaHTML(HTMLParser):
 				'HistoriaClinica': "",
 				'DescMacro':"",
 				'DescMicro':"",
-				'DescDiagnostico':""
+				'DescDiagnostico':"",
+				'Texto':""
 				}
 
         def handle_data(self, data):        	
@@ -38,7 +41,6 @@ class LecturaHTML(HTMLParser):
         	data=data.replace('\r\n',"").replace("\t", "").replace("\n", " ").strip()
         	
         	if data!="":
-        		# escribirArchivo(data)
         		textoPlano+=data+" "
 
 	        	if data=='DESCRIPCION MACROSCOPICA':
@@ -52,7 +54,7 @@ class LecturaHTML(HTMLParser):
 
 	        	if switch==0:
 	        		lista.append(data)
-	        		print lista
+	        		
 				
 			if switch==1:				
 				dataMacro+=" "+data
@@ -67,24 +69,41 @@ class LecturaHTML(HTMLParser):
 	        		else:
 	        			dataDiag+=" "+data
 	def __del__(self):
-		print "hola";
+		print "ok...";
         
-def ArmarJson():
-	global lista, jsonDatos, dataMacro, dataMicro, dataDiag
-	jsonDatos['NumeroRegistro']=lista[0].replace(".txt", "")
-	jsonDatos['HistoriaClinica']=lista[1]
-	#Se Agregan al diccionario Eliminando el titulo "Desc Macro...", etc.
-	jsonDatos['DescMacro']=dataMacro[25:]
-	jsonDatos['DescMicro']=dataMicro[25:]
-	jsonDatos['DescDiagnostico']=dataDiag[13:]
+def ArmarJson(ruta):
+	global lista, jsonDatos, dataMacro, dataMicro, dataDiag,switch,textoPlano
+	try:
+		
 	
-	
-	print "==> Datos cargados ..OK"
-	print "NR..>",jsonDatos['NumeroRegistro']
-	print "HC..>",jsonDatos['HistoriaClinica']
-	# print "MACRO..>",jsonDatos['DescMacro']
-	# print "MiCRO..>",jsonDatos['DescMicro']
-	# print "Diag..>",jsonDatos['DescDiagnostico']
+		jsonDatos['NumeroRegistro']=ruta.replace(".txt", "")
+		print ruta
+		
+		#VALIDAR SI EXISTE HOSTORIA CLINCICA
+		if len(lista)>0:
+			if lista[1].isdigit():
+				jsonDatos['HistoriaClinica']=lista[1]
+			else:
+				jsonDatos['HistoriaClinica']=''
+
+		#Se Agregan al diccionario Eliminando el titulo "Desc Macro...", etc.
+		jsonDatos['DescMacro']=dataMacro[25:]
+		jsonDatos['DescMicro']=dataMicro[25:]
+		jsonDatos['DescDiagnostico']=dataDiag[13:]
+		jsonDatos['Texto']=textoPlano
+		
+		lista=[]
+		switch=0
+		dataDiag=dataMicro=dataMacro=textoPlano=""
+		print "==> Datos cargados ..OK"
+		# print "NR..>",jsonDatos['NumeroRegistro']
+		# print "HC..>",jsonDatos['HistoriaClinica']
+		# print "MACRO..>",jsonDatos['DescMacro']
+		# print "MiCRO..>",jsonDatos['DescMicro']
+		# print "Diag..>",jsonDatos['DescDiagnostico']
+
+	except IndexError, e:
+		print "ENTRO", lista, jsonDatos['NumeroRegistro']
 			
 #Se obtiene el numero de registro
 def getNumeroRegistro():
@@ -119,12 +138,11 @@ def getId_Muestra():
 	return csv[2]
 
 def getHTML():
-	return textoPlano
+	return jsonDatos['Texto']
 
 #Se abre el archivo y se almacena el contenido
 def leerArchivo(ruta):
 	global informe
-	# informe=open(ruta, 'r').read()
 	informe=ruta
 	print "==> Leyendo archivo: ..OK"
 	return informe
