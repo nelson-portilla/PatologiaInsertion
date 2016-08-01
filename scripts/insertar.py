@@ -63,7 +63,7 @@ def escribirCSV():
 	reg.close()
 	print "==> Creando Archivo CSV ..OK"
 
-def extraerDatos(datos, ruta):
+def extraerDatos(datos, ruta, folder):
 	#Se crea el Objeto de la clase	
 	objHTML = extraer.LecturaHTML()
 	#Se Lee el archivo
@@ -73,7 +73,7 @@ def extraerDatos(datos, ruta):
 	#Con la lista creada se arma un Json
 	extraer.ArmarJson(ruta)
 	#Se Convierte de HTML A TXT
-	extraer.escribirArchivo()
+	extraer.escribirArchivo(folder)
 	
 	
 
@@ -85,25 +85,30 @@ def crearSQL():
 	
 
 if __name__ == '__main__':
-	i=1   
-	# totalRegistros=contarArchivos("../../../informes-patologia")
-	path = '../informes/*.html'   
-	# path = '../Informes_Revisar/*.html'   
-	files=glob.glob(path)   
-	# totalRegistros=contarArchivos("../informes")
-	totalRegistros=len(files)
-	crearMatriz(totalRegistros)
-	for file in files:
-		print "\n==> Enviando archivo: ", file+"..."+str(i)
-		filedata=open(file, 'r').read()
-		extraerDatos(filedata, file)
-		crearcsv(i)
-		extraer.inicializar()		
-		i+=1
-		print "Archivo Numero: ",i
-	escribirCSV()	
-	crearSQL()
-	insertar()
+	
+	# totalRegistros=contarArchivos("../../../informes-patologia") **
+	# path = '../informes/*.html' **
+	folders=glob.glob('../informesEnTXT/*')   
+	print folders
+	for folder in folders:
+		path = folder+'/*.html'
+		# path = '../Informes_Revisar/*.html'   **
+		files=glob.glob(path)   
+		# totalRegistros=contarArchivos("../informes") **
+		totalRegistros=len(files)
+		crearMatriz(totalRegistros)
+		i=1
+		for file in files:
+			print "\n==> Enviando archivo: ", file+"..."+str(i)
+			filedata=open(file, 'r').read()
+			extraerDatos(filedata, file, folder)
+			crearcsv(i)
+			extraer.inicializar()		
+			i+=1
+			print "Archivo Numero: ",i
+		escribirCSV()	
+		crearSQL()
+		insertar()
 	
 	
 	

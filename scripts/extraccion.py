@@ -75,7 +75,7 @@ class LecturaHTML(HTMLParser):
 def ArmarJson(ruta):
 	global lista, jsonDatos, dataMacro, dataMicro, dataDiag,switch,textoPlano
 	try:
-		jsonDatos['NumeroRegistro']=ruta[12:].replace(".txt.html", "")
+		jsonDatos['NumeroRegistro']=ruta[21:].replace(".txt.html", "")
 				
 		#VALIDAR SI EXISTE HOSTORIA CLINCICA
 		if len(lista)>0:
@@ -148,10 +148,19 @@ def leerArchivo(ruta):
 	print "==> Leyendo archivo: ..OK"
 	return informe
 
-def escribirArchivo():
+def escribirArchivo(folder):
 	global textoPlano, jsonDatos
+	#RECIBE '../informesEnTXT/c02' -> cortar -> final -> c02
+	folder=str(folder)[17:]
+	print "ESTE FOLDER",folder
+	if not os.path.exists('../informesEnTXT1/'+folder):
+		try:
+			os.makedirs('../informesEnTXT1/'+folder)
+		except OSError as exc: # Guard against race condition
+			if exc.errno != errno.EEXIST:
+				raise
 	nr=jsonDatos['NumeroRegistro']+".txt"	
-	outputtxt=open("../informesEnTXT/"+nr, 'w')
+	outputtxt=open('../informesEnTXT1/'+folder+'/'+nr, 'w')
 	outputtxt.write(textoPlano)
 	outputtxt.write("\n")
 	outputtxt.close()
