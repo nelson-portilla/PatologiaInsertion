@@ -5,7 +5,7 @@
 CREATE TABLE muestra_html
 (
   id integer NOT NULL DEFAULT nextval('"Muestra_HTML_id_seq"'::regclass),
-  historiaclinica integer NOT NULL,
+  historiaclinica BIGINT NOT NULL,
   numeroregistro character varying(20) NOT NULL,
   descmacro text,
   descmicro text,

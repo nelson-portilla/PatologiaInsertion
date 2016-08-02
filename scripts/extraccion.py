@@ -39,7 +39,7 @@ class LecturaHTML(HTMLParser):
         def handle_data(self, data):        	
         	global switch, dataMacro, dataMicro, dataDiag, textoPlano        	
 			#Se limpia el texto, se eliminan saltos de linea y espacios.
-        	data=data.replace('\r\n',"").replace("\t", "").replace("\n", " ").strip()
+        	data=data.replace('\r\n',"").replace("\t", "").replace("\n", " ").replace("||", " ").replace("|", " ").strip()
         	
         	if data!="":
         		textoPlano+=data+" "
@@ -75,8 +75,9 @@ class LecturaHTML(HTMLParser):
 def ArmarJson(ruta):
 	global lista, jsonDatos, dataMacro, dataMicro, dataDiag,switch,textoPlano
 	try:
-		jsonDatos['NumeroRegistro']=ruta[21:].replace(".txt.html", "")
+		print "NUMERO REGISTRO: ",ruta[26:]
 				
+		jsonDatos['NumeroRegistro']=ruta[26:].replace(".txt.html", "")
 		#VALIDAR SI EXISTE HOSTORIA CLINCICA
 		if len(lista)>0:
 			if lista[1].isdigit():
@@ -151,16 +152,16 @@ def leerArchivo(ruta):
 def escribirArchivo(folder):
 	global textoPlano, jsonDatos
 	#RECIBE '../informesEnTXT/c02' -> cortar -> final -> c02
-	folder=str(folder)[17:]
+	folder=str(folder)[22:]
 	print "ESTE FOLDER",folder
-	if not os.path.exists('../informesEnTXT1/'+folder):
+	if not os.path.exists('../informesEnTXT/'+folder):
 		try:
-			os.makedirs('../informesEnTXT1/'+folder)
+			os.makedirs('../informesEnTXT/'+folder)
 		except OSError as exc: # Guard against race condition
 			if exc.errno != errno.EEXIST:
 				raise
 	nr=jsonDatos['NumeroRegistro']+".txt"	
-	outputtxt=open('../informesEnTXT1/'+folder+'/'+nr, 'w')
+	outputtxt=open('../informesEnTXT/'+folder+'/'+nr, 'w')
 	outputtxt.write(textoPlano)
 	outputtxt.write("\n")
 	outputtxt.close()

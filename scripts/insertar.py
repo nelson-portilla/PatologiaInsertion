@@ -3,6 +3,7 @@ import os,sys
 import extraccion as extraer
 global matriz 
 import glob
+from time import time
 matriz=[[None] * 6 for i in range(2)]
 
 def insertar():
@@ -15,8 +16,10 @@ def insertar():
 			raise NameError('NoExito')
 	except NameError:
 		print "Ha fallado la insercion, error de los datos: posible llave duplicada o tipo de datos"
+		sys.exit(1)
 	except Exception, e:
 		print "Ha fallado la insercion: error general",str(e)
+		sys.exit(1)
 
 def crearMatriz(numArchivos):
 	global matriz
@@ -83,32 +86,44 @@ def crearSQL():
 	sql.write ("COPY muestra_html FROM '"+ruta+"' DELIMITER '|' CSV HEADER;")
 	print "==> Creando SQL-File-COPY ..OK"
 	
+def existefolder(folder):
+	#RECIBE '../informesEnTXT/c02' -> cortar -> final -> c02
+	folder=str(folder)[22:]
+	return os.path.exists('../informesEnTXT/'+folder)
+
 
 if __name__ == '__main__':
 	
 	# totalRegistros=contarArchivos("../../../informes-patologia") **
 	# path = '../informes/*.html' **
-	folders=glob.glob('../informesEnTXT/*')   
+	tiempo_inicial = time()
+	folders=glob.glob('../informes-patologia/*')   
 	print folders
 	for folder in folders:
-		path = folder+'/*.html'
-		# path = '../Informes_Revisar/*.html'   **
-		files=glob.glob(path)   
-		# totalRegistros=contarArchivos("../informes") **
-		totalRegistros=len(files)
-		crearMatriz(totalRegistros)
-		i=1
-		for file in files:
-			print "\n==> Enviando archivo: ", file+"..."+str(i)
-			filedata=open(file, 'r').read()
-			extraerDatos(filedata, file, folder)
-			crearcsv(i)
-			extraer.inicializar()		
-			i+=1
-			print "Archivo Numero: ",i
-		escribirCSV()	
-		crearSQL()
-		insertar()
+		#IGNORAR FOLDER OTROS:
+		fotros=str(folder)[22:]
+		if (fotros!="otros") and not existefolder(folder):
+			path = folder+'/*.html'
+			# path = '../Informes_Revisar/*.html'   **
+			files=glob.glob(path)   
+			# totalRegistros=contarArchivos("../informes") **
+			totalRegistros=len(files)
+			crearMatriz(totalRegistros)
+			i=1
+			for file in files:
+				print "\n==> Enviando archivo: ", file+"..."+str(i)
+				filedata=open(file, 'r').read()
+				extraerDatos(filedata, file, folder)
+				crearcsv(i)
+				extraer.inicializar()		
+				i+=1
+				print "Archivo Numero: ",i
+			escribirCSV()	
+			crearSQL()
+			insertar()
+	tiempo_final = time()
+	tiempo_ejecucion = tiempo_final - tiempo_inicial
+	print '- - El tiempo de ejecucion en segundos fue: - - > ',str(tiempo_ejecucion)+"seg" #En segundos
 	
 	
 	
