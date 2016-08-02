@@ -3,23 +3,33 @@
 -- DROP TABLE muestra;
 
 CREATE TABLE muestra_html
-(	
-  id integer NOT NULL,
-  idpaciente integer NOT NULL, -- Identificador del paciente al cual corresponde la muestra
-  numeroregistro character varying(20) NOT NULL, -- Código alfanumérico único asignado a la muestra.  Es de la forma:...
-  descmacro text, -- Descripción macroscópica
-  descmicro text, -- Descripción microscópica
-  diagnostico text, -- Diagnóstico
-  
-  CONSTRAINT muestra_html_pkey PRIMARY KEY (id),
-  
-  CONSTRAINT muestra_idpaciente_fkey FOREIGN KEY (idpaciente)
-      REFERENCES paciente (id) MATCH SIMPLE
-      ON UPDATE CASCADE ON DELETE CASCADE
+(
+  id integer NOT NULL DEFAULT nextval('"Muestra_HTML_id_seq"'::regclass),
+  historiaclinica BIGINT NOT NULL,
+  numeroregistro character varying(20) NOT NULL,
+  descmacro text,
+  descmicro text,
+  diagnostico text,
+  texto text,
+  CONSTRAINT muestra_html_pkey PRIMARY KEY (id)
 )
 WITH (
   OIDS=FALSE
 );
+ALTER TABLE muestra_html
+  OWNER TO postgres;
+
+
+CREACION DE LA SECUENCIA
+
+CREATE SEQUENCE "Muestra_HTML_id_seq"
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+ALTER TABLE "Muestra_HTML_id_seq"
+  OWNER TO postgres;
 
 
 

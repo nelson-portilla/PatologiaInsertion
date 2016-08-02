@@ -1,34 +1,111 @@
 # -*- coding: utf-8 -*-
-#By: Nelson Portilla
 import os,sys
 reload(sys)
 sys.setdefaultencoding('utf8')
 import codecs
-global informe, lista, jsonDatos;
+global informe, lista, jsonDatos, switch, dataMacro, dataMicro, dataDiag, textoPlano
 from HTMLParser import HTMLParser
-informe=""
+informe=textoPlano=""
 lista=[]
-jsonDatos={	'NumeroRegistro':"",
+switch=0
+dataDiag=dataMicro=dataMacro=""
+jsonDatos= {'NumeroRegistro':"",
 			'HistoriaClinica': "",
 			'DescMacro':"",
 			'DescMicro':"",
-			'DescDiagnostico':""
+			'DescDiagnostico':"",
+			'Texto':""
+			}
+
+
+def inicializar():
+	global informe, lista, jsonDatos, switch, dataMacro, dataMicro, dataDiag, textoPlano
+	print "Limpiando..." 
+	informe=textoPlano=""
+	lista=[]
+	switch=0
+	dataDiag=dataMicro=dataMacro=""
+	jsonDatos= {'NumeroRegistro':"",
+			'HistoriaClinica': "",
+			'DescMacro':"",
+			'DescMicro':"",
+			'DescDiagnostico':"",
+			'Texto':""
 			}
 
 #Clase para leer el html, se obtienen solo el Data, se limpia y se arma la lista.
-class LecturaHTML(HTMLParser):        
+class LecturaHTML(HTMLParser):
+
         def handle_data(self, data):        	
-        	if((data.replace('\r\n',"")).replace("\t", "")!=""):
-        		lista.append(data.strip())
+        	global switch, dataMacro, dataMicro, dataDiag, textoPlano        	
+			#Se limpia el texto, se eliminan saltos de linea y espacios.
+        	data=data.replace('\r\n',"").replace("\t", "").replace("\n", " ").replace("||", " ").replace("|", " ").strip()
+        	
+        	if data!="":
+        		textoPlano+=data+" "
+
+	        	if data=='DESCRIPCION MACROSCOPICA':
+	        		switch=1	        		
+
+	        	if data=='DESCRIPCION MICROSCOPICA':
+	        		switch=2
+	        		
+	        	if data=='DIAGNOSTICO:':
+	        		switch=3        		
+
+	        	if switch==0:
+	        		lista.append(data)
+	        		
+				
+			if switch==1:				
+				dataMacro+=" "+data
+
+	        	if switch==2:
+	        		dataMicro+=" "+data
+
+	        	if switch==3:
+	        		#CODIGO PARA PARADA, Analizar TM33464 M7387
+	        		if any(char.isdigit() for char in data[:2]):
+	        			switch=4
+	        		else:
+	        			dataDiag+=" "+data
+	def __del__(self):
+		print "ok...";
         
-def ArmarJson():
-	global lista, jsonDatos
-	jsonDatos['NumeroRegistro']=lista[0].replace(".txt", "")
-	jsonDatos['HistoriaClinica']=lista[1]
-	jsonDatos['DescMacro']=lista[7]
-	jsonDatos['DescMicro']=lista[9]
-	jsonDatos['DescDiagnostico']=lista[11]
-	# print jsonDatos		
+def ArmarJson(ruta):
+	global lista, jsonDatos, dataMacro, dataMicro, dataDiag,switch,textoPlano
+	try:
+		print "NUMERO REGISTRO: ",ruta[26:]
+				
+		jsonDatos['NumeroRegistro']=ruta[26:].replace(".txt.html", "")
+		#VALIDAR SI EXISTE HOSTORIA CLINCICA
+		if len(lista)>0:
+			if lista[1].isdigit():
+				jsonDatos['HistoriaClinica']=lista[1]
+			else:
+				jsonDatos['HistoriaClinica']=''
+		else:
+			jsonDatos['HistoriaClinica']=''
+
+
+		#Se Agregan al diccionario Eliminando el titulo "Desc Macro...", etc.
+		jsonDatos['DescMacro']=dataMacro[25:]
+		jsonDatos['DescMicro']=dataMicro[25:]
+		jsonDatos['DescDiagnostico']=dataDiag[13:]
+		jsonDatos['Texto']=textoPlano
+		
+		# lista=[]
+		# switch=0
+		# dataDiag=dataMicro=dataMacro=textoPlano=""
+		print "==> Datos cargados ..OK"
+		# print "NR..>",jsonDatos['NumeroRegistro']
+		# print "HC..>",jsonDatos['HistoriaClinica']
+		# print "MACRO..>",jsonDatos['DescMacro']
+		# print "MiCRO..>",jsonDatos['DescMicro']
+		# print "Diag..>",jsonDatos['DescDiagnostico']
+
+	except IndexError, e:
+		print "ENTRO en IndexError", lista, jsonDatos['NumeroRegistro']
 			
 #Se obtiene el numero de registro
 def getNumeroRegistro():
@@ -63,14 +140,32 @@ def getId_Muestra():
 	return csv[2]
 
 def getHTML():
-	return informe
+	return jsonDatos['Texto']
 
 #Se abre el archivo y se almacena el contenido
 def leerArchivo(ruta):
 	global informe
-	informe=open(ruta, 'r').read()
+	informe=ruta
+	print "==> Leyendo archivo: ..OK"
 	return informe
 
+def escribirArchivo(folder):
+	global textoPlano, jsonDatos
+	#RECIBE '../informesEnTXT/c02' -> cortar -> final -> c02
+	folder=str(folder)[22:]
+	print "ESTE FOLDER",folder
+	if not os.path.exists('../informesEnTXT/'+folder):
+		try:
+			os.makedirs('../informesEnTXT/'+folder)
+		except OSError as exc: # Guard against race condition
+			if exc.errno != errno.EEXIST:
+				raise
+	nr=jsonDatos['NumeroRegistro']+".txt"	
+	outputtxt=open('../informesEnTXT/'+folder+'/'+nr, 'w')
+	outputtxt.write(textoPlano)
+	outputtxt.write("\n")
+	outputtxt.close()
+	print "==> Convirtiendo Archivo : ",nr+" ..OK"
 
 if __name__ == '__main__':
 	None
