@@ -1,2 +1,0 @@
-psql -u postgres-h localhost -d informesHUV -f file.sql
-psql -U postgres -h localhost -d patologiaHUV -c 'select p.id from paciente as p where hc=2067495;'

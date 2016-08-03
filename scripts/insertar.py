@@ -4,7 +4,7 @@ import extraccion as extraer
 global matriz 
 import glob
 from time import time
-matriz=[[None] * 6 for i in range(2)]
+matriz=[[None] * 7 for i in range(2)]
 
 def insertar():
 	try:
@@ -23,34 +23,30 @@ def insertar():
 
 def crearMatriz(numArchivos):
 	global matriz
-	matriz=[[None] * 6 for i in range(numArchivos+1)]
+	matriz=[[None] * 7 for i in range(numArchivos+1)]
 	matriz[0][0]="numeroregistro"
 	matriz[0][1]="historiaclinica"
-	matriz[0][2]="descmacro"
-	matriz[0][3]="descmicro"
-	matriz[0][4]="diagnostico"
-	matriz[0][5]="html"
+	matriz[0][2]="cedula"
+	matriz[0][3]="descmacro"
+	matriz[0][4]="descmicro"
+	matriz[0][5]="diagnostico"
+	matriz[0][6]="html"
 	print "==> Creando Matriz ..OK"
 	
 def contarArchivos(ruta):
 	count=0
 	count=len([name for name in os.listdir(ruta) if os.path.isfile(os.path.join(ruta, name))])
-	# count=([name for name in os.listdir(ruta) if os.path.isdir(os.path.join(ruta, name))])
-	# print count
-	# for folder in count:
-	# 	contents = os.listdir(os.path.join(ruta,folder)) # get list of contents
-	# 	if len(contents) > 20:
-	# 		print (folder,len(contents))
 	print "==> Contando Archivos ..OK", count
 	return count
 
 def crearcsv(i):
 	matriz[i][0]=extraer.getNumeroRegistro()
 	matriz[i][1]=extraer.getHistoriaClinica()
-	matriz[i][2]=extraer.getMacro()
-	matriz[i][3]=extraer.getMicro()
-	matriz[i][4]=extraer.getDiagnostico()
-	matriz[i][5]=extraer.getHTML()
+	matriz[i][2]=""#ESPACIO PARA LA CEDULA
+	matriz[i][3]=extraer.getMacro()
+	matriz[i][4]=extraer.getMicro()
+	matriz[i][5]=extraer.getDiagnostico()
+	matriz[i][6]=extraer.getHTML()
 
 def escribirCSV():
 	print "MATRIZ: ",len (matriz)
@@ -87,8 +83,8 @@ def crearSQL():
 	print "==> Creando SQL-File-COPY ..OK"
 	
 def existefolder(folder):
-	#RECIBE '../informesEnTXT/c02' -> cortar -> final -> c02
-	folder=str(folder)[22:]
+	#RECIBE '../../informes-patologia-html/r96' -> cortar -> final -> c02
+	folder=str(folder)[30:]
 	return os.path.exists('../informesEnTXT/'+folder)
 
 
@@ -97,11 +93,11 @@ if __name__ == '__main__':
 	# totalRegistros=contarArchivos("../../../informes-patologia") **
 	# path = '../informes/*.html' **
 	tiempo_inicial = time()
-	folders=glob.glob('../informes-patologia/*')   
-	print folders
+	folders=glob.glob('../../informes-patologia-html/*')   
+	#print folders
 	for folder in folders:
 		#IGNORAR FOLDER OTROS:
-		fotros=str(folder)[22:]
+		fotros=str(folder)[30:]
 		if (fotros!="otros") and not existefolder(folder):
 			path = folder+'/*.html'
 			# path = '../Informes_Revisar/*.html'   **

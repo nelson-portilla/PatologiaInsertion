@@ -1,17 +1,13 @@
-﻿-- Table: muestra
-
--- DROP TABLE muestra;
-
-CREATE TABLE muestra_html
+﻿CREATE TABLE muestra_html
 (
-  id integer NOT NULL DEFAULT nextval('"Muestra_HTML_id_seq"'::regclass),
-  historiaclinica BIGINT NOT NULL,
   numeroregistro character varying(20) NOT NULL,
+  historiaclinica bigint,
+  cedula int,
   descmacro text,
   descmicro text,
   diagnostico text,
   texto text,
-  CONSTRAINT muestra_html_pkey PRIMARY KEY (id)
+  CONSTRAINT muestra_html_pkey PRIMARY KEY (numeroregistro)
 )
 WITH (
   OIDS=FALSE
@@ -19,8 +15,7 @@ WITH (
 ALTER TABLE muestra_html
   OWNER TO postgres;
 
-
-CREACION DE LA SECUENCIA
+--CREACION DE LA SECUENCIA
 
 CREATE SEQUENCE "Muestra_HTML_id_seq"
   INCREMENT 1

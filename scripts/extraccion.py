@@ -75,9 +75,10 @@ class LecturaHTML(HTMLParser):
 def ArmarJson(ruta):
 	global lista, jsonDatos, dataMacro, dataMicro, dataDiag,switch,textoPlano
 	try:
-		print "NUMERO REGISTRO: ",ruta[26:]
-				
-		jsonDatos['NumeroRegistro']=ruta[26:].replace(".txt.html", "")
+		#RECIBE '../informes-patologia-htlm/c02/c00.txt.html' -> cortar -> final -> c02
+		numreg=ruta[34:]
+		print "NUMERO REGISTRO: ",numreg
+		jsonDatos['NumeroRegistro']=numreg.replace(".txt.html", "")
 		#VALIDAR SI EXISTE HOSTORIA CLINCICA
 		if len(lista)>0:
 			if lista[1].isdigit():
@@ -152,7 +153,7 @@ def leerArchivo(ruta):
 def escribirArchivo(folder):
 	global textoPlano, jsonDatos
 	#RECIBE '../informesEnTXT/c02' -> cortar -> final -> c02
-	folder=str(folder)[22:]
+	folder=str(folder)[30:]
 	print "ESTE FOLDER",folder
 	if not os.path.exists('../informesEnTXT/'+folder):
 		try:
