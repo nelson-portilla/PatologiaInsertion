@@ -1,6 +1,7 @@
 import os,sys
 #from extraccion as t import *
 import extraccion as extraer
+import getempty as getempty
 global matriz 
 import glob
 from time import time
@@ -47,6 +48,11 @@ def crearcsv(i):
 	matriz[i][4]=extraer.getMicro()
 	matriz[i][5]=extraer.getDiagnostico()
 	matriz[i][6]=extraer.getHTML()
+	#SI hc o macro,micro,diagnostico estan vacios:
+	if (matriz[i][1]=="" or matriz[i][3]=="" or matriz[i][4]=="" or matriz[i][5]==""):
+		return True
+	else:
+		return False
 
 def escribirCSV():
 	print "MATRIZ: ",len (matriz)
@@ -110,10 +116,14 @@ if __name__ == '__main__':
 				print "\n==> Enviando archivo: ", file+"..."+str(i)
 				filedata=open(file, 'r').read()
 				extraerDatos(filedata, file, folder)
-				crearcsv(i)
+				flag=crearcsv(i)
+				if flag:
+					getempty.listar(file[34:])
 				extraer.inicializar()		
 				i+=1
 				print "Archivo Numero: ",i
+			getempty.crearfolder(folder)
+			getempty.escribirlista(folder)
 			escribirCSV()	
 			crearSQL()
 			insertar()
