@@ -40,7 +40,7 @@ def contarArchivos(ruta):
 	print "==> Contando Archivos ..OK", count
 	return count
 
-def crearcsv(i):
+def crearcsv(i, folder):
 	matriz[i][0]=extraer.getNumeroRegistro()
 	matriz[i][1]=extraer.getHistoriaClinica()
 	matriz[i][2]=""#ESPACIO PARA LA CEDULA
@@ -48,11 +48,36 @@ def crearcsv(i):
 	matriz[i][4]=extraer.getMicro()
 	matriz[i][5]=extraer.getDiagnostico()
 	matriz[i][6]=extraer.getHTML()
-	#SI hc o macro,micro,diagnostico estan vacios:
-	if (matriz[i][1]=="" or matriz[i][3]=="" or matriz[i][4]=="" or matriz[i][5]==""):
-		return True
-	else:
-		return False
+	
+	flag=False
+	#Para los folders c00,c01. No se revisa macro, micro
+	#PENDIENTE: matriz[i][1]=="" para cedula
+	if folder[0]=="m":
+		print "entro: ",folder[0]
+		#SI hc o macro,micro,diagnostico estan vacios:
+		if (matriz[i][3]=="" or matriz[i][4]=="" or matriz[i][5]==""):
+			flag= True
+		else:
+			flag= False
+
+	#Para los r00 tienen macro, micro y algunos citologia.
+	elif folder[0]=="r":
+		if (matriz[i][3]=="" or matriz[i][4]=="" or matriz[i][5]==""):
+			if ("CITOLOGIA" in matriz[i][6]):
+				flag=False
+			else:
+				flag=True
+		else:
+			flag= False
+
+	elif folder[0]=="c":
+		print "entro en c: ",folder[0]
+		if ("CITOLOGIA" in matriz[i][6]):
+			print "encontro citologia: ",folder[0]
+			flag=False
+		else:
+			flag=True
+	return flag
 
 def escribirCSV():
 	print "MATRIZ: ",len (matriz)
@@ -116,7 +141,7 @@ if __name__ == '__main__':
 				print "\n==> Enviando archivo: ", file+"..."+str(i)
 				filedata=open(file, 'r').read()
 				extraerDatos(filedata, file, folder)
-				flag=crearcsv(i)
+				flag=crearcsv(i, folder[30:])
 				if flag:
 					getempty.listar(file[34:])
 				extraer.inicializar()		
