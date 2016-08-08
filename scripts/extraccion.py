@@ -20,7 +20,7 @@ jsonDatos= {'NumeroRegistro':"",
 
 def inicializar():
 	global informe, lista, jsonDatos, switch, dataMacro, dataMicro, dataDiag, textoPlano
-	print "Limpiando..." 
+	# print "Limpiando..." 
 	informe=textoPlano=""
 	lista=[]
 	switch=0
@@ -70,14 +70,15 @@ class LecturaHTML(HTMLParser):
 	        		else:
 	        			dataDiag+=" "+data
 	def __del__(self):
-		print "ok...";
+		None
+		# print "ok...";
         
 def ArmarJson(ruta):
 	global lista, jsonDatos, dataMacro, dataMicro, dataDiag,switch,textoPlano
 	try:
 		#RECIBE '../informes-patologia-htlm/c02/c00.txt.html' -> cortar -> final -> c02
 		numreg=ruta[34:]
-		print "NUMERO REGISTRO: ",numreg
+		# print "NUMERO REGISTRO: ",numreg
 		jsonDatos['NumeroRegistro']=numreg.replace(".txt.html", "")
 		#VALIDAR SI EXISTE HOSTORIA CLINCICA
 		if len(lista)>0:
@@ -98,7 +99,7 @@ def ArmarJson(ruta):
 		# lista=[]
 		# switch=0
 		# dataDiag=dataMicro=dataMacro=textoPlano=""
-		print "==> Datos cargados ..OK"
+		# print "==> Datos cargados ..OK"
 		# print "NR..>",jsonDatos['NumeroRegistro']
 		# print "HC..>",jsonDatos['HistoriaClinica']
 		# print "MACRO..>",jsonDatos['DescMacro']
@@ -106,7 +107,8 @@ def ArmarJson(ruta):
 		# print "Diag..>",jsonDatos['DescDiagnostico']
 
 	except IndexError, e:
-		print "ENTRO en IndexError", lista, jsonDatos['NumeroRegistro']
+		None
+		# print "ENTRO en IndexError", lista, jsonDatos['NumeroRegistro']
 			
 #Se obtiene el numero de registro
 def getNumeroRegistro():
@@ -147,14 +149,14 @@ def getHTML():
 def leerArchivo(ruta):
 	global informe
 	informe=ruta
-	print "==> Leyendo archivo: ..OK"
+	# print "==> Leyendo archivo: ..OK"
 	return informe
 
 def escribirArchivo(folder):
 	global textoPlano, jsonDatos
 	#RECIBE '../informesEnTXT/c02' -> cortar -> final -> c02
 	folder=str(folder)[30:]
-	print "ESTE FOLDER",folder
+	# print "ESTE FOLDER",folder
 	if not os.path.exists('../informesEnTXT/'+folder):
 		try:
 			os.makedirs('../informesEnTXT/'+folder)
@@ -166,7 +168,7 @@ def escribirArchivo(folder):
 	outputtxt.write(textoPlano)
 	outputtxt.write("\n")
 	outputtxt.close()
-	print "==> Convirtiendo Archivo : ",nr+" ..OK"
+	# print "==> Convirtiendo Archivo : ",nr+" ..OK"
 
 if __name__ == '__main__':
 	None

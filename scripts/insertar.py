@@ -2,6 +2,7 @@ import os,sys
 #from extraccion as t import *
 import extraccion as extraer
 import getempty as getempty
+import progressBar as progress
 global matriz 
 import glob
 from time import time
@@ -9,10 +10,11 @@ matriz=[[None] * 7 for i in range(2)]
 
 def insertar():
 	try:
-		print "Insertando datos desde csv..."
+		# print "Insertando datos desde csv..."
 		csv=os.popen("echo | psql -U postgres -h localhost -d patologiaHUV -f insertarFROMcsv.sql").read()
 		if(csv[:4]=="COPY"):
-			print "Insercion exitosa", csv
+			None
+			# print "Insercion exitosa", csv
 		else:
 			raise NameError('NoExito')
 	except NameError:
@@ -32,12 +34,12 @@ def crearMatriz(numArchivos):
 	matriz[0][4]="descmicro"
 	matriz[0][5]="diagnostico"
 	matriz[0][6]="html"
-	print "==> Creando Matriz ..OK"
+	# print "==> Creando Matriz ..OK"
 	
 def contarArchivos(ruta):
 	count=0
 	count=len([name for name in os.listdir(ruta) if os.path.isfile(os.path.join(ruta, name))])
-	print "==> Contando Archivos ..OK", count
+	# print "==> Contando Archivos ..OK", count
 	return count
 
 def crearcsv(i, folder):
@@ -53,7 +55,6 @@ def crearcsv(i, folder):
 	#Para los folders c00,c01. No se revisa macro, micro
 	#PENDIENTE: matriz[i][1]=="" para cedula
 	if folder[0]=="m":
-		print "entro: ",folder[0]
 		#SI hc o macro,micro,diagnostico estan vacios:
 		if (matriz[i][3]=="" or matriz[i][4]=="" or matriz[i][5]==""):
 			flag= True
@@ -70,17 +71,15 @@ def crearcsv(i, folder):
 		else:
 			flag= False
 
-	elif folder[0]=="c":
-		print "entro en c: ",folder[0]
+	elif folder[0]=="c":		
 		if ("CITOLOGIA" in matriz[i][6]):
-			print "encontro citologia: ",folder[0]
 			flag=False
 		else:
 			flag=True
 	return flag
 
 def escribirCSV():
-	print "MATRIZ: ",len (matriz)
+	# print "MATRIZ: ",len (matriz)
 	reg=open("registro.csv", 'w')
 
 	for idx, linea in enumerate(matriz):
@@ -91,7 +90,7 @@ def escribirCSV():
 			reg.write("\n")
 
 	reg.close()
-	print "==> Creando Archivo CSV ..OK"
+	# print "==> Creando Archivo CSV ..OK"
 
 def extraerDatos(datos, ruta, folder):
 	#Se crea el Objeto de la clase	
@@ -111,7 +110,7 @@ def crearSQL():
 	ruta=os.path.abspath('registro.csv')
 	sql=open('insertarFROMcsv.sql', 'w')
 	sql.write ("COPY muestra_html FROM '"+ruta+"' DELIMITER '|' CSV HEADER;")
-	print "==> Creando SQL-File-COPY ..OK"
+	# print "==> Creando SQL-File-COPY ..OK"
 	
 def existefolder(folder):
 	#RECIBE '../../informes-patologia-html/r96' -> cortar -> final -> c02
@@ -124,6 +123,7 @@ if __name__ == '__main__':
 	# totalRegistros=contarArchivos("../../../informes-patologia") **
 	# path = '../informes/*.html' **
 	tiempo_inicial = time()
+	number=0
 	folders=glob.glob('../../informes-patologia-html/*')   
 	#print folders
 	for folder in folders:
@@ -136,9 +136,10 @@ if __name__ == '__main__':
 			# totalRegistros=contarArchivos("../informes") **
 			totalRegistros=len(files)
 			crearMatriz(totalRegistros)
+			progress.printProgress(number, len(folders), prefix = 'Progress:', suffix = 'Complete', barLength = 50)
 			i=1
 			for file in files:
-				print "\n==> Enviando archivo: ", file+"..."+str(i)
+				# print "\n==> Enviando archivo: ", file+"..."+str(i)
 				filedata=open(file, 'r').read()
 				extraerDatos(filedata, file, folder)
 				flag=crearcsv(i, folder[30:])
@@ -146,15 +147,17 @@ if __name__ == '__main__':
 					getempty.listar(file[34:])
 				extraer.inicializar()		
 				i+=1
-				print "Archivo Numero: ",i
-			getempty.crearfolder(folder)
+				# print "Archivo Numero: ",i
+			# getempty.crearfolder(folder)
 			getempty.escribirlista(folder)
 			escribirCSV()	
 			crearSQL()
 			insertar()
+			number+=1
+
 	tiempo_final = time()
 	tiempo_ejecucion = tiempo_final - tiempo_inicial
-	print '- - El tiempo de ejecucion en segundos fue: - - > ',str(tiempo_ejecucion)+"seg" #En segundos
+	print '\n- - El tiempo de ejecucion en segundos fue: - - > ',str(tiempo_ejecucion)+"seg" #En segundos
 	
 	
 	
