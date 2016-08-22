@@ -1,14 +1,7 @@
- Directorio de C:\MASTER\m00 M00-0285.TXT
-
- Directorio de C:\MASTER\m00 M00-0358.TXT
-
- Directorio de C:\MASTER\m00 M00-0394.TXT
-
- Directorio de C:\MASTER\m00 M00-0057.TXT
-
- Directorio de C:\MASTER\m00 M00-250.TXT
-
- Directorio de C:\PATOLOGI R03-105.TXT
-
- Directorio de C:\PATOLOGI M006-235.TXT
-
+M00-0285.TXT
+M00-0358.TXT
+M00-0394.TXT
+M00-0057.TXT
+M00-250.TXT
+R03-105.TXT
+M006-235.TXT

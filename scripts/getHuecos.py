@@ -8,7 +8,7 @@ def buscarenlista(nombre, ruta, newfile):
 		salida_system = os.popen('echo | grep -c "'+ nombre +'" '+ruta).read()
 		coincidencias=int(salida_system)
 		out=open(newfile, 'a')
-		if coincidencias==0:
+		if coincidencias!=0:
 			out.write(nombre)
 			out.write("\n")
 		out.close()
@@ -39,9 +39,13 @@ if __name__ == '__main__':
 	# rutadestino='../listaconpesos/master_formateado_html.txt'
 	# archivo_nuevo='../lista_de_huecos/huecos_estan_en_master_pero_wp.txt'
 
-	rutaorigen='../listaconpesos/master_formateado.txt'
+	# rutaorigen='../listaconpesos/master_formateado.txt'
+	# rutadestino='../listaconpesos/master_formateado_html.txt'
+	# archivo_nuevo='../lista_de_huecos/master_no_estan_html.txt'
+
+	rutaorigen='../lista_de_huecos/huecos_estan_en_master.txt'
 	rutadestino='../listaconpesos/master_formateado_html.txt'
-	archivo_nuevo='../lista_de_huecos/master_no_estan_html.txt'
+	archivo_nuevo='../lista_de_huecos/huecos_estan_en_master_pero_html.txt'
 
 	p = subprocess.Popen(['wc', '-l', rutaorigen], stdout=subprocess.PIPE,stderr=subprocess.PIPE)
 	result, err = p.communicate()
@@ -61,7 +65,8 @@ if __name__ == '__main__':
 		# 	nombre=str(linea.strip().lower())		
 		
 
-		nombre=str(linea.split()[1].strip())		
+		# nombre=str(linea.split()[1].strip())		
+		nombre=str(linea.strip())		
 		buscarenlista(nombre, rutadestino, archivo_nuevo)
 		progress.printProgress(number, total_lineas-1, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
 		number+=1
