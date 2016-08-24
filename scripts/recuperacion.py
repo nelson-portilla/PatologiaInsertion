@@ -7,16 +7,16 @@ def copiar(nombre, origen, destino, folder):
 	try:		
 		
 		##PARA LA BUSQUEDA EN MASTER PRIMERO ENCONTRAR RUTA.
-		nuevaruta=os.popen("echo | find ../../00HUV_patologias/master/informes-patologia/informes-patologia-unificado -iname "+nombre).read()
+		nuevaruta=os.popen("echo | find ../../00HUV_patologias/master/informes-patologia/informes-patologia-html -iname "+nombre).read()
 		respuesta=os.system("cp "+nuevaruta.strip()+" "+destino)
 		
 		##PARA LOS OTROS FOLDERS COMENTAR LINEAS ANTERIORES Y DESCOMENTAR LA DE ABAJO
 		# respuesta=os.system("cp "+origen+"/"+nombre+" "+destino)
-		# if respuesta!=0:
-		# 	out=open(destino+"/000_NO_copiados_"+folder+".txt", 'a')
-		# 	out.write(nombre)
-		# 	out.write("\n")
-		# 	out.close()
+		if respuesta!=0:
+			out=open(destino+"/000_NO_copiados_"+folder+".txt", 'a')
+			out.write(nombre)
+			out.write("\n")
+			out.close()
 
 	except Exception, e:
 		print "Ha fallado",str(e),nombre
@@ -55,10 +55,22 @@ if __name__ == '__main__':
 	# folder='master_html'
 
 	##RERACION_HUECOS master_WP
-	lista='../lista_de_huecos/huecos_estan_en_master_pero_wp.txt'
+	# lista='../lista_de_huecos/huecos_estan_en_master_pero_wp.txt'
+	# rutaorigen='../../00HUV_patologias/master/informes-patologia/informes-patologia-html'
+	# rutadestino='../../recuperacion_huecos/master_wp'
+	# folder='master_wp'
+
+	#RERACION_HUECOS master_WP
+	lista='../lista_de_huecos/huecos_estan_en_liliana.txt'
+	rutaorigen='../../00HUV_patologias/patologias_miriam'
+	rutadestino='../../recuperacion_huecos/miriam_patologi'
+	folder='miriam_debe_estar_en_C_o_Master'
+
+	#RERACION_VACIOS master_HTML
+	lista='../listas_de_vacios/SI_estan_en_masterHTML_NO_VACIOS.txt'
 	rutaorigen='../../00HUV_patologias/master/informes-patologia/informes-patologia-html'
-	rutadestino='../../recuperacion_huecos/master_wp'
-	folder='master_wp'
+	rutadestino='../../recuperacion_info/master'
+	folder='no_estan_en_master_html'
 
 
 
