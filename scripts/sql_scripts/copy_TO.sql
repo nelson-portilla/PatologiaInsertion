@@ -1,0 +1,1 @@
+COPY (select numeroregistro from muestra_html) TO '/home/registro/Documentos/Repositorios/PatologiaInsertion/scripts/lista_cargados_a_BD.csv'
