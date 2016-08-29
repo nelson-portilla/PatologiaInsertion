@@ -80,9 +80,10 @@ def ArmarJson(ruta):
 		if ruta.endswith(".html"):
 
 			#RECIBE '../informes-patologia-htlm/c02/c00.txt.html' -> cortar -> final -> c02
-			numreg=ruta[34:]
+			# numreg=ruta[34:]
+			numreg=ruta
 			# print "NUMERO REGISTRO: ",numreg
-			jsonDatos['NumeroRegistro']=numreg.replace(".txt.html", "")
+			jsonDatos['NumeroRegistro']=numreg.replace(".txt.html", "").lower()
 			#VALIDAR SI EXISTE HOSTORIA CLINCICA
 			if len(lista)>0:
 				if lista[1].isdigit():
@@ -99,9 +100,9 @@ def ArmarJson(ruta):
 			jsonDatos['DescDiagnostico']=dataDiag[13:]
 			jsonDatos['Texto']=textoPlano
 			
-			# lista=[]
-			# switch=0
-			# dataDiag=dataMicro=dataMacro=textoPlano=""
+			## lista=[]
+			## switch=0
+			## dataDiag=dataMicro=dataMacro=textoPlano=""
 			# print "==> Datos cargados ..OK"
 			# print "NR..>",jsonDatos['NumeroRegistro']
 			# print "HC..>",jsonDatos['HistoriaClinica']
@@ -155,19 +156,18 @@ def leerArchivo(ruta):
 	# print "==> Leyendo archivo: ..OK"
 	return informe
 
-def escribirArchivo(folder):
+def escribirArchivo(folder, folder_txt):
 	global textoPlano, jsonDatos
 	#RECIBE '../informesEnTXT/c02' -> cortar -> final -> c02
-	folder=str(folder)[30:]
 	# print "ESTE FOLDER",folder
-	if not os.path.exists('../informesEnTXT/'+folder):
+	if not os.path.exists(folder_txt+"/"+folder):
 		try:
-			os.makedirs('../informesEnTXT/'+folder)
+			os.makedirs(folder_txt+"/"+folder)
 		except OSError as exc: # Guard against race condition
 			if exc.errno != errno.EEXIST:
 				raise
 	nr=jsonDatos['NumeroRegistro']+".txt"	
-	outputtxt=open('../informesEnTXT/'+folder+'/'+nr, 'w')
+	outputtxt=open(folder_txt+"/"+folder+'/'+nr, 'w')
 	outputtxt.write(textoPlano)
 	outputtxt.write("\n")
 	outputtxt.close()

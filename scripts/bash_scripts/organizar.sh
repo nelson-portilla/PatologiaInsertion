@@ -1,20 +1,22 @@
 #!/bin/bash
 # -*- ENCODING: UTF-8 -*-
 
-#UBICACION DEL LISTADO DE ARCHIVOS:
+#UBICACION DONDE QUEDARAN EL LISTADO DE ARCHIVOS A ORGANIZAR:
 rutalistado="/home/registro/Vídeos/prueba_cargar/scripts/texto_plano/lista_archivo.txt"
 
 
 ##PROCESO DE CREACION DE LA LISTA
+##carpeta: 	VARIABLE QUE LEE LA PRIMERA ENTRADA DEL USUARIO, ES DECIR
+##			LA CARPETA DONDE  ESTAN LOS ARCHIVOS A ORGANIZAR.
 carpeta=$1
 echo "Creando lista de archivos de la carpeta: $carpeta \n"
 ls $carpeta > $rutalistado
 
 
 
-##PROCESO DE EJECUCION DEL SCRIPT PYTHON
+################ 	PROCESO DE EJECUCION DEL SCRIPT PYTHON          #############################
 
-#definir las rutas antes de correr el script:
+#Definir las rutas antes de correr el script:
 
 #RUTA DEL ARCHIVO PYTHON, CAMBIAR RUTA SI ESTA EN UNA UBICACION DIFERENTE
 pythonfile="/home/registro/Vídeos/prueba_cargar/scripts/auxiliares/organizar.py"

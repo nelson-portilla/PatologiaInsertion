@@ -11,13 +11,13 @@ from time import time
 matriz=[[None] * 7 for i in range(2)]
 
 ##METODO QUE CARGA EL ARCHIVO.SQL QUE CONTIENE EL COPY EL CUAL INSERTA DATOS A UNA TABLA DESDE UN SCV
-def insertar():
+def insertar(main_folder):
 	try:
 		# print "Insertando datos desde csv..."
-		csv=os.popen("echo | psql -U postgres -h localhost -d patologiaHUV -f insertarFROMcsv.sql").read()
+		csv=os.popen("echo | psql -U postgres -h localhost -d patologiaHUV -f "+main_folder+"/scripts/sql_scripts/insertarFROMcsv.sql").read()
 		if(csv[:4]=="COPY"):
 			None
-			# print "Insercion exitosa", csv
+			print "Insercion exitosa", csv
 		else:
 			raise NameError('NoExito')
 	except NameError:
@@ -59,6 +59,7 @@ def crearcsv(i, folder):
 	matriz[i][4]=extraer.getMicro()
 	matriz[i][5]=extraer.getDiagnostico()
 	matriz[i][6]=extraer.getHTML()
+	# print "creandoCSV: ", matriz
 	
 	##BANDERA PARA SABER SI LOS ARCHIVOS SON VACIOS DEPENDIENDO SI SON M,R O C
 	flag=False
@@ -90,10 +91,10 @@ def crearcsv(i, folder):
 
 
 ##METODO PARA ESCRIBIR LA MATRIZ EN UN ARCHIVO SCV
-def escribirCSV():
+def escribirCSV(main_folder):
+	global matriz
 	# print "MATRIZ: ",len (matriz)
-	reg=open("registro.csv", 'w')
-
+	reg=open(main_folder+"/scripts/texto_plano/registro.csv", 'w')	
 	for idx, linea in enumerate(matriz):
 		if idx==len(matriz)-1:			
 			reg.write("|".join(linea))
@@ -106,7 +107,11 @@ def escribirCSV():
 
 
 ##METODO PARA EL PROCESO CONSECUTIVO DE EXTRACCION
-def extraerDatos(datos, ruta, folder):
+##EJ: 	datos: es toda la informacion leida del archivo
+##		ruta: nombre del arhivo. "m16-006.txt.html"
+##		folder: es el subfolder. "m16","c02", etc
+##		folder_txt: es el folder donde estaran los subfolders y luego los archivos TXT
+def extraerDatos(datos, ruta, folder, folder_txt):
 	#Se crea el Objeto de la clase	
 	objHTML = extraer.LecturaHTML()
 	#Se Lee el archivo
@@ -116,15 +121,16 @@ def extraerDatos(datos, ruta, folder):
 	#Con la lista creada se arma un Json
 	extraer.ArmarJson(ruta)
 	#Se Convierte de HTML A TXT
-	extraer.escribirArchivo(folder)
+	extraer.escribirArchivo(folder, folder_txt)
 	
 	
 
 ##METODO PARA CREAR EL ARCHIVO SQL QUE CARGA EL CSV A LA BASE DE DATOS
-def crearSQL():
-	ruta=os.path.abspath('registro.csv')
-	sql=open('insertarFROMcsv.sql', 'w')
-	sql.write ("COPY muestra_html FROM '"+ruta+"' DELIMITER '|' CSV HEADER;")
+def crearSQL(main_folder):
+	archivo_csv=main_folder+"/scripts/texto_plano/registro.csv"
+	ruta=main_folder+"/scripts/sql_scripts/insertarFROMcsv.sql"
+	sql=open(ruta, 'w')
+	sql.write ("COPY muestra_html FROM '"+archivo_csv+"' DELIMITER '|' CSV HEADER;")
 	# print "==> Creando SQL-File-COPY ..OK"
 	
 
@@ -139,10 +145,14 @@ def existefolder(folder, subfolder):
 if __name__ == '__main__':
 
 	folder_principal='../../informes-patologia-html/*'	
-	##SE RECIBE LA RUTA DEL folder principal
+	##SE RECIBE LA RUTA DEL folder principal de patolgias
 	folder_principal=str(sys.argv[1])
 	##SE RECIBE LA RUTA DEL folder para guardar los txt
 	folder_txt=sys.argv[2]
+	##SE RECIBE LA RUTA DEL folder principal scripts
+	folder_main=sys.argv[3]
+
+
 
 	##SE CREA UNA LISTA CON LOS SUBFOLDERS: M16, C08, ETC
 	subfolders_name=str(os.popen("echo | ls "+folder_principal).read()).split()
@@ -155,42 +165,44 @@ if __name__ == '__main__':
 	
 	##subfolders son: c00, c01, r05, m16, etc
 	for subfolder in subfolders_name:
-		#IGNORAR FOLDER OTROS:				
+		##IGNORAR FOLDER OTROS:				
 		if (subfolder!="otros") and not existefolder(folder_txt, subfolder):
 			path = folder_principal+subfolder+'/*.html'		
 			files=os.popen("echo | ls "+folder_principal+subfolder+"/*.html").read().split()					
 			
 			files_glob=glob.glob(path)
 			files_list=os.listdir(folder_principal+"/"+subfolder)
-			# totalRegistros=contarArchivos("../informes") **
-			totalRegistros=len(files)			
+			## totalRegistros=contarArchivos("../informes") **
+			totalRegistros=len(files)
 			crearMatriz(totalRegistros)
 			# progress.printProgress(number, len(subfolders_name)-1, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
 			i=1
-			print files_list			
+			## File_list es: todos los archivos contenidos en el subfolder, ej: m16-008.txt.html
 			for file in files_list:
 				# print "\n==> Enviando archivo: ", file+"..."+str(i)
-				completa=os.path.join(folder_principal,subfolder,file)
-				print completa
-				# filedata=open(file, 'r').read()
-				# print files
-				# extraerDatos(filedata, file, subfolder)
-				# flag=crearcsv(i, subfolder)
-			# 	if flag:
-			# 		getempty.listar(file[34:])
-			# 	extraer.inicializar()		
-			# 	i+=1
-			# 	# print "Archivo Numero: ",i
-			# # getempty.crearfolder(folder)
-			# getempty.escribirlista(folder)
-			# escribirCSV()	
-			# crearSQL()
-			# insertar()
-			# number+=1
+				## Se obtiene la ruta completa del archivo, para abrirlo
+				file_completo=os.path.join(folder_principal,subfolder,file)				
+				## Dado que pueden existir archivos con otro formato, solo nos interesa html
+				if file.endswith(".html"):
+					filedata=open(file_completo, 'r').read()
+					extraerDatos(filedata, file, subfolder, folder_txt)
+					##Crearcsv retorna TRUE si hay vacios.
+					flag=crearcsv(i, subfolder)
+					if flag:
+						getempty.listar(file)
+					extraer.inicializar()		
+					i+=1
+					# print "Archivo Numero: ",i
+				##getempty.crearfolder(folder)
+			getempty.escribirlista(folder_main+"/scripts/texto_plano")
+			escribirCSV(folder_main)	
+			crearSQL(folder_main)
+			insertar(folder_main)
+			number+=1
 
 	tiempo_final = time()
 	tiempo_ejecucion = tiempo_final - tiempo_inicial
 	print '\n- - El tiempo de ejecucion en segundos fue: - - > ',str(tiempo_ejecucion)+"seg" #En segundos
-	
+
 	
 	
