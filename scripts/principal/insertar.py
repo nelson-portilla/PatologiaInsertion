@@ -15,14 +15,15 @@ def insertar(main_folder):
 	try:
 		# print "Insertando datos desde csv..."
 		csv=os.popen("echo | psql -U postgres -h localhost -d patologiaHUV -f "+main_folder+"/scripts/sql_scripts/insertarFROMcsv.sql").read()
-		if(csv[:4]=="COPY"):
-			None
-			print "Insercion exitosa", csv
-		else:
-			raise NameError('NoExito')
-	except NameError:
-		print "Ha fallado la insercion, error de los datos: posible llave duplicada o tipo de datos"
-		sys.exit(1)
+		#print csv
+	# 	if(csv[:4]=="COPY"):
+	# 		None
+	# 		print "Insercion exitosa", csv
+	# 	else:
+	# 		raise NameError('NoExito')
+	# except NameError:
+	# 	print "Ha fallado la insercion, error de los datos: posible llave duplicada o tipo de datos"
+	# 	sys.exit(1)
 	except Exception, e:
 		print "Ha fallado la insercion: error general",str(e)
 		sys.exit(1)
@@ -50,32 +51,32 @@ def contarArchivos(ruta):
 	return count
 
 ##METODO PARA LLENAR LA MATRIZ CON LOS DATOS ALMACENADOS EN EXTRACCION
-## i: ES EL NUMERO DE ARCHIVO QUE SE VA A INSERTAR
-def crearcsv(i, folder):
-	matriz[i][0]=extraer.getNumeroRegistro()
-	matriz[i][1]=extraer.getHistoriaClinica()
-	matriz[i][2]=""#ESPACIO PARA LA CEDULA
-	matriz[i][3]=extraer.getMacro()
-	matriz[i][4]=extraer.getMicro()
-	matriz[i][5]=extraer.getDiagnostico()
-	matriz[i][6]=extraer.getHTML()
+## numArchivo: ES EL NUMERO DE ARCHIVO QUE SE VA A INSERTAR, serian las filas de la matriz
+def crearcsv(numArchivo, folder):
+	matriz[numArchivo][0]=extraer.getNumeroRegistro()
+	matriz[numArchivo][1]=extraer.getHistoriaClinica()
+	matriz[numArchivo][2]=""#ESPACIO PARA LA CEDULA
+	matriz[numArchivo][3]=extraer.getMacro()
+	matriz[numArchivo][4]=extraer.getMicro()
+	matriz[numArchivo][5]=extraer.getDiagnostico()
+	matriz[numArchivo][6]=extraer.getHTML()
 	# print "creandoCSV: ", matriz
 	
 	##BANDERA PARA SABER SI LOS ARCHIVOS SON VACIOS DEPENDIENDO SI SON M,R O C
 	flag=False
 	#Para los folders c00,c01. No se revisa macro, micro
-	#PENDIENTE: matriz[i][1]=="" para cedula
+	#PENDIENTE: matriz[numArchivo][1]=="" para cedula
 	if folder[0]=="m":
 		#SI hc o macro,micro,diagnostico estan vacios:
-		if (matriz[i][3]=="" or matriz[i][4]=="" or matriz[i][5]==""):
+		if (matriz[numArchivo][3]=="" or matriz[numArchivo][4]=="" or matriz[numArchivo][5]==""):
 			flag= True
 		else:
 			flag= False
 
 	#Para los r00 tienen macro, micro y algunos citologia.
 	elif folder[0]=="r":
-		if (matriz[i][3]=="" or matriz[i][4]=="" or matriz[i][5]==""):
-			if ("CITOLOGIA" in matriz[i][6]):
+		if (matriz[numArchivo][3]=="" or matriz[numArchivo][4]=="" or matriz[numArchivo][5]==""):
+			if ("CITOLOGIA" in matriz[numArchivo][6]):
 				flag=False
 			else:
 				flag=True
@@ -83,7 +84,7 @@ def crearcsv(i, folder):
 			flag= False
 
 	elif folder[0]=="c":		
-		if ("CITOLOGIA" in matriz[i][6]):
+		if ("CITOLOGIA" in matriz[numArchivo][6]):
 			flag=False
 		else:
 			flag=True
@@ -130,21 +131,32 @@ def crearSQL(main_folder):
 	archivo_csv=main_folder+"/scripts/texto_plano/registro.csv"
 	ruta=main_folder+"/scripts/sql_scripts/insertarFROMcsv.sql"
 	sql=open(ruta, 'w')
-	sql.write ("COPY muestra_html FROM '"+archivo_csv+"' DELIMITER '|' CSV HEADER;")
+	
+	##SE CREA LA CONSULTA
+	texto=("CREATE TEMP TABLE tmp_table AS SELECT * FROM muestra_html WITH NO DATA;")
+	texto+="\nCOPY tmp_table FROM '"+archivo_csv+"' DELIMITER '|' CSV HEADER;"
+	# texto+="\nINSERT INTO muestra_html SELECT DISTINCT ON numeroregistro * FROM tmp_table;"
+	texto+=("\nINSERT INTO muestra_html SELECT * FROM tmp_table t1"
+				"\nwhere not exists"
+				"\n(select numeroregistro from muestra_html t2 "
+					"\nwhere t2.numeroregistro=t1.numeroregistro);")
+	texto+="\nDROP TABLE tmp_table;"
+	sql.write (texto)
+	texto=""
+
+	# sql.write ("COPY muestra_html FROM '"+archivo_csv+"' DELIMITER '|' CSV HEADER;")
 	# print "==> Creando SQL-File-COPY ..OK"
 	
 
 ##METODO QUE RETORNA TRUE SI EL FOLDER EXISTE
-def existefolder(folder, subfolder):
-	#RECIBE '../../informes-patologia-html/r96' -> cortar -> final -> c02
-	# folder=str(folder)[30:]	
-	return os.path.exists(folder+subfolder)
+def existefolder(folder, subfolder, file):
+	return os.path.exists(folder+"/"+subfolder+"/"+file)
 
 
 ##CLASE PRINCIPAL
 if __name__ == '__main__':
 
-	folder_principal='../../informes-patologia-html/*'	
+	#folder_principal='../../informes-patologia-html/*'	
 	##SE RECIBE LA RUTA DEL folder principal de patolgias
 	folder_principal=str(sys.argv[1])
 	##SE RECIBE LA RUTA DEL folder para guardar los txt
@@ -166,7 +178,7 @@ if __name__ == '__main__':
 	##subfolders son: c00, c01, r05, m16, etc
 	for subfolder in subfolders_name:
 		##IGNORAR FOLDER OTROS:				
-		if (subfolder!="otros") and not existefolder(folder_txt, subfolder):
+		if (subfolder!="otros"):
 			path = folder_principal+subfolder+'/*.html'		
 			files=os.popen("echo | ls "+folder_principal+subfolder+"/*.html").read().split()					
 			
@@ -175,30 +187,40 @@ if __name__ == '__main__':
 			## totalRegistros=contarArchivos("../informes") **
 			totalRegistros=len(files)
 			crearMatriz(totalRegistros)
-			# progress.printProgress(number, len(subfolders_name)-1, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
-			i=1
+			progress.printProgress(number, len(subfolders_name)-2, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
+			numArchivo=1
 			## File_list es: todos los archivos contenidos en el subfolder, ej: m16-008.txt.html
 			for file in files_list:
-				# print "\n==> Enviando archivo: ", file+"..."+str(i)
+				# print "\n==> Enviando archivo: ", file+"..."+str(numArchivo)
+
+				if not existefolder(folder_txt, subfolder, file):
+
 				## Se obtiene la ruta completa del archivo, para abrirlo
-				file_completo=os.path.join(folder_principal,subfolder,file)				
-				## Dado que pueden existir archivos con otro formato, solo nos interesa html
-				if file.endswith(".html"):
-					filedata=open(file_completo, 'r').read()
-					extraerDatos(filedata, file, subfolder, folder_txt)
-					##Crearcsv retorna TRUE si hay vacios.
-					flag=crearcsv(i, subfolder)
-					if flag:
-						getempty.listar(file)
-					extraer.inicializar()		
-					i+=1
-					# print "Archivo Numero: ",i
+					file_completo=os.path.join(folder_principal,subfolder,file)				
+					## Dado que pueden existir archivos con otro formato, solo nos interesa html
+					if file.endswith(".html"):
+						filedata=open(file_completo, 'r').read()
+						extraerDatos(filedata, file, subfolder, folder_txt)
+						##Crearcsv retorna TRUE si hay vacios.
+						flag=crearcsv(numArchivo, subfolder)
+						if flag:
+							getempty.listar(file)
+						extraer.inicializar()		
+						##VARIABLE INCREMENTAL PARA EL NUMERO DE ARHCIVO
+						numArchivo+=1
+					# print "Archivo Numero: ",numArchivo
 				##getempty.crearfolder(folder)
+
+			##CREA UNA LISTA DE LOS VACIOS:
 			getempty.escribirlista(folder_main+"/scripts/texto_plano")
-			escribirCSV(folder_main)	
+			##CREA UN CSV con los datos del subfolder
+			escribirCSV(folder_main)
+			##CREA EL ARCHIVO SQL CON LA CONSULTA PARA INSERTAR A TABLA IGNORANDO DUPLICADOS	
 			crearSQL(folder_main)
+			##EJECUTA LLAMADO AL SISTEMA PARA CARGAR ARCHIVO SQL CON CONSULTA DE INSERTAR
 			insertar(folder_main)
-			number+=1
+			##VARIABLE INCREMENTAL PARA LA BARRA DE PROGRESO
+		number+=1
 
 	tiempo_final = time()
 	tiempo_ejecucion = tiempo_final - tiempo_inicial

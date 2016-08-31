@@ -1,0 +1,20 @@
+Date: Agosto 2016
+Author: Nelson
+
+---REQUERIMIENTOS---
+Para ejecutar el script de insertar, se debe especificar: 
+1- 	El nombre de la carpeta la cual se va a sacar la lista.
+
+TENER EN CUENTA:
+*- 	El folder donde estarán los archivos no deben contener subfolders, es decir, los archivos deben estar
+	a nivel 1 (no en subfolders)
+
+*-	Antes de correr el script, definir las rutas correctas dentro del bash: organizar.sh
+
+---EJECUCION----
+CORRER scrip desde cualquier ubicacion:
+	--EJEMPLO--	
+
+python /home/registro/Vídeos/prueba_cargar/scripts/principal/insertar.py /home/registro/Vídeos/prueba_cargar/organizados/ /home/registro/Vídeos/
+prueba_cargar/archivos_txt /home/registro/Vídeos/prueba_cargar
+
