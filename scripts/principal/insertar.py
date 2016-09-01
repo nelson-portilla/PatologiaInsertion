@@ -179,8 +179,8 @@ if __name__ == '__main__':
 	for subfolder in subfolders_name:
 		##IGNORAR FOLDER OTROS:				
 		if (subfolder!="otros"):
-			path = folder_principal+subfolder+'/*.html'		
-			files=os.popen("echo | ls "+folder_principal+subfolder+"/*.html").read().split()					
+			path = folder_principal+'/'+subfolder+'/*.html'		
+			files=os.popen("echo | ls "+folder_principal+'/'+subfolder+"/*.html").read().split()					
 			
 			files_glob=glob.glob(path)
 			files_list=os.listdir(folder_principal+"/"+subfolder)
