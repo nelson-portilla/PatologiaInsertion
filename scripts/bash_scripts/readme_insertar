@@ -42,6 +42,11 @@ TENER EN CUENTA:
 	deben estar orgaizados en subfolders. para organizar en
 	subfolders ejecutar el script "organizar"
 
+*-	Solo se toman en cuenta folders con nombre de tamano 3, es decir,
+	que corresponda a nombres como c03,m45,r98, etc.
+	Subfolders con diferentes nombre como "nueva carpeta", "otros", "nuevas patologias", etc.
+	NO SE TOMAN EN CUENTA.
+
 *-	Las rutas no deben contener "Barra inclinada al final"
 		ej: /home/informes/		--> X
 			/home/informes		--> GOOD!

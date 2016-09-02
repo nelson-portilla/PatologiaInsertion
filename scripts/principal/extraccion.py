@@ -50,7 +50,7 @@ class LecturaHTML(HTMLParser):
 	        	if data=='DESCRIPCION MICROSCOPICA':
 	        		switch=2
 	        		
-	        	if data=='DIAGNOSTICO:':
+	        	if data=='DIAGNOSTICO:' or ("CITOLOGIA" in data) or ("CITOLOGÍA" in data):
 	        		switch=3        		
 
 	        	if switch==0:
@@ -81,9 +81,9 @@ def ArmarJson(ruta):
 
 			#RECIBE '../informes-patologia-htlm/c02/c00.txt.html' -> cortar -> final -> c02
 			# numreg=ruta[34:]
-			numreg=ruta
+			numreg=ruta.lower()
 			# print "NUMERO REGISTRO: ",numreg
-			jsonDatos['NumeroRegistro']=numreg.replace(".txt.html", "").lower()
+			jsonDatos['NumeroRegistro']=numreg.replace(".txt.html", "")
 			#VALIDAR SI EXISTE HOSTORIA CLINCICA
 			if len(lista)>0:
 				if lista[1].isdigit():

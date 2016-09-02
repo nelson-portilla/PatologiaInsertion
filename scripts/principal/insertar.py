@@ -177,8 +177,9 @@ if __name__ == '__main__':
 	
 	##subfolders son: c00, c01, r05, m16, etc
 	for subfolder in subfolders_name:
-		##IGNORAR FOLDER OTROS:				
-		if (subfolder!="otros"):
+		##IGNORAR FOLDER OTROS Y TAMBIEN SE RESTRINGE A QUE LOS FOLDERS SEAN SOLO DE TAM 3 ej: c02,m99,r05				
+		##FOLDER CON DIFERENTE NOMBRE NO SE LEERÁN
+		if (len(subfolder)<=3):
 			path = folder_principal+'/'+subfolder+'/*.html'		
 			files=os.popen("echo | ls "+folder_principal+'/'+subfolder+"/*.html").read().split()					
 			
