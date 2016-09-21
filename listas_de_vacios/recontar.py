@@ -1,6 +1,6 @@
 import os,sys
-import progressBar as progress
-import subprocess
+#import progressBar as progress
+#import subprocess
 
 #Clase de emparejamiento entre master y listas_de_vacios para obtener lista de archivos faltantes.
 def buscarenmaster(nombre):
@@ -85,21 +85,61 @@ def buscarenvaciosmaster(nombre):
 		sys.exit(1)
 
 
+def buscarendiscos(nombre):
+	try:		
+		salida_system = os.popen('echo | grep -c "'+ nombre +'" ../listaconpesos/listadisco1.txt').read()
+		coincidencias=int(salida_system)
+		out3=open('NUEVO_perdidos_definitivos.txt', 'a')
+		#out=open('NUEVO_SI_estan_en_disco1.txt', 'a')
+		if coincidencias!=0:
+			#out.write(nombre)
+			#out.write("\n")
+			None
+		else:
+			salida_system = os.popen('echo | grep -c "'+ nombre +'" ../listaconpesos/listadisco2.txt').read()
+			coincidencias2=int(salida_system)
+			#out2=open('NUEVO_SI_estan_en_disco2.txt', 'a')
+			if coincidencias2!=0:
+				#out2.write(nombre)
+				#out2.write("\n")
+				None
+			else:
+				out3.write(nombre)
+				out3.write("\n")
+
+			#out3.close()
+			#out2.close()
+
+		out3.close()
+
+
+
+
+
+
+
+	except Exception, e:
+		print "Ha fallado",str(e),nombre
+		sys.exit(1)
+
+
+
 if __name__ == '__main__':
-	p = subprocess.Popen(['wc', '-l', '../listas_de_vacios/NO_estan_en_master.txt'], stdout=subprocess.PIPE, 
-                                          stderr=subprocess.PIPE)
-	result, err = p.communicate()
-	total_lineas=int(result.strip().split()[0])
+	#p = subprocess.Popen(['wc', '-l', '../listas_de_vacios/NO_estan_en_master.txt'], stdout=subprocess.PIPE, 
+                                          #stderr=subprocess.PIPE)
+	#result, err = p.communicate()
+	#total_lineas=int(result.strip().split()[0])
 	number=0	
-	lista_vacios=open('../listas_de_vacios/NO_estan_en_master.txt', 'r')
+	lista_vacios=open('Perdidos.txt', 'r')
 	for linea in lista_vacios:
 		# nombre=str(linea)
 		# buscarenliliana(linea.strip())
-		if buscarenliliana(linea.strip()):
-			None
-		else:
-			buscarenerlinda(linea.strip())
-		progress.printProgress(number, total_lineas-1, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
+		# if buscarenliliana(linea.strip()):
+		# 	None
+		# else:
+		# 	buscarenerlinda(linea.strip())
+		buscarendiscos(linea.strip())
+		#progress.printProgress(number, total_lineas-1, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
 		number+=1
 
 	# buscar_en_liliana("m03-6688.txt")

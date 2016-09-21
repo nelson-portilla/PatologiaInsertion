@@ -1,20 +1,23 @@
 import os,sys
-#matriz=[[None] * 7 for i in range(2)]
 
-#recibe ../../informes-patologia-html/r03/r03-058.txt.html
+##FUNCION PARA FORMATEAR UNA ARCHIVO CON LISTA DE ARCHIVOS
+##	A UNA LISTA DE TUPLAS PESO Y NOMBRE.
+###	Las Posiciones de los arreglos cambia dependiendo de
+###	la lista de entrada.
 def formatear():
 	try:
-		# inputtxt=open('../listaconpesos/master.txt', 'r')
-		inputtxt=open('../listaconpesos/masterhtml.txt', 'r')
-		# outputtxt=open('../listaconpesos/master_formateado.txt', 'w')
-		outputtxt=open('../listaconpesos/master_formateado_html.txt', 'w')
+		rutain="/home/registro/Documentos/Repositorios/PatologiaInsertion/listaconpesos/listazmaster.txt"
+		rutaout="/home/registro/Documentos/Repositorios/PatologiaInsertion/listaconpesos/listazmaster_formateado.txt"
+		inputtxt=open(rutain, 'r')
+		outputtxt=open(rutaout, 'w')
 
 		for linea in inputtxt:
 			linea=linea.rstrip()			
-			if linea[:5]=="-rw-r":
+			#if linea[:5]=="-rw-r":
+			if True:
 				print "formating..."								
 				lista=linea.split()			
-				peso=lista[4]				
+				peso=lista[3]				
 				nombre = lista [7]				
 				outputtxt.write(peso)
 				outputtxt.write(" ")
