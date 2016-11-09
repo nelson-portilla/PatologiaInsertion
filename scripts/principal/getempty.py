@@ -29,8 +29,7 @@ def crearfolder(folder):
 def escribirlista(folder):
 	global lista
 	try:
-		folder=str(folder)[30:]	
-		outputtxt=open('../listas_de_vacios/lista_vacios.txt', 'a')
+		outputtxt=open(folder+'/lista_vacios.txt', 'a')
 		# outputtxt.write("Numero de archivos vacios: "+str(len(lista)))
 		# outputtxt.write("\n")	
 		for item in lista:

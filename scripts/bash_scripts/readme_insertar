@@ -1,0 +1,71 @@
+Date: Agosto 2016
+Author: Nelson
+
+--PERMISOS--
+Se debe otorgar permisos de lectura y escritura al script.
+ chmod 777 insertar.sh 
+
+---REQUERIMIENTOS---
+Para ejecutar el script de insertar, se debe especificar: 
+1- 	Folder principal donde estaran los informes organizados en subcarpetas:
+	ejemplo ramificacion:	
+						/home
+							folder_patologias
+								|_c10
+								|_m16
+								|_r90
+								|_c10
+
+2-	Folder donde se escribiran los archivos transformados en txt "archivos planos con una linea de texto":
+	ejemplo ramificacion:	
+						/home
+							folder_txt_convertidos
+								|_c10
+								|_m16
+								|_r90
+								|_c10
+
+
+3- 	Folder principal donde esta la carpeta "scripts":
+	ejempĺo ramificacion:
+						/home
+							|_PatologiaInsertion
+								|_scripts
+									|_auxiliares
+									|_bash_scripts
+									|_principal
+									|_sqlcripts
+									|_texto_plano
+
+TENER EN CUENTA:
+*- 	El folder donde estarán los archivos html a insertar,
+	deben estar orgaizados en subfolders. para organizar en
+	subfolders ejecutar el script "organizar"
+
+*-	Solo se toman en cuenta folders con nombre de tamano 3, es decir,
+	que corresponda a nombres como c03,m45,r98, etc.
+	Subfolders con diferentes nombre como "nueva carpeta", "otros", "nuevas patologias", etc.
+	NO SE TOMAN EN CUENTA.
+
+*-	Las rutas no deben contener "Barra inclinada al final"
+		ej: /home/informes/		--> X
+			/home/informes		--> GOOD!
+
+---EJECUCION----
+CORRER scrip desde cualquier ubicacion:
+	--EJEMPLO--	
+
+	--De acuerdo a la ramificacion anterior
+PythonFile: /home/PatologiaInsertion/Scripts/principal/insertar.py
+FolderPatologias: /home/registro/Vídeos/prueba_cargar/organizados
+FolderTXTConvertidos: /home/registro/Vídeos/prueba_cargar/archivos_txt
+FolderPrincipalScripts: /home/registro/Vídeos/prueba_cargar
+
+__EJECUCION:__
+python PythonFile FolderPatologias FolderTXTConvertidos FolderPrincipalScripts   
+
+	--ej2
+python /home/registro/Vídeos/prueba_cargar/scripts/principal/insertar.py /home/registro/Vídeos/prueba_cargar/organizados /home/registro/Vídeos/
+prueba_cargar/archivos_txt /home/registro/Vídeos/prueba_cargar
+
+

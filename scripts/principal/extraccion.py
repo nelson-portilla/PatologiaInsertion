@@ -20,7 +20,7 @@ jsonDatos= {'NumeroRegistro':"",
 
 def inicializar():
 	global informe, lista, jsonDatos, switch, dataMacro, dataMicro, dataDiag, textoPlano
-	print "Limpiando..." 
+	# print "Limpiando..." 
 	informe=textoPlano=""
 	lista=[]
 	switch=0
@@ -39,7 +39,7 @@ class LecturaHTML(HTMLParser):
         def handle_data(self, data):        	
         	global switch, dataMacro, dataMicro, dataDiag, textoPlano        	
 			#Se limpia el texto, se eliminan saltos de linea y espacios.
-        	data=data.replace('\r\n',"").replace("\t", "").replace("\n", " ").strip()
+        	data=data.replace('\r\n',"").replace("\t", "").replace("\n", " ").replace("||", " ").replace("|", " ").strip()
         	
         	if data!="":
         		textoPlano+=data+" "
@@ -50,7 +50,7 @@ class LecturaHTML(HTMLParser):
 	        	if data=='DESCRIPCION MICROSCOPICA':
 	        		switch=2
 	        		
-	        	if data=='DIAGNOSTICO:':
+	        	if data=='DIAGNOSTICO:' or ("CITOLOGIA" in data) or ("CITOLOGÍA" in data):
 	        		switch=3        		
 
 	        	if switch==0:
@@ -70,41 +70,49 @@ class LecturaHTML(HTMLParser):
 	        		else:
 	        			dataDiag+=" "+data
 	def __del__(self):
-		print "ok...";
+		None
+		# print "ok...";
         
 def ArmarJson(ruta):
 	global lista, jsonDatos, dataMacro, dataMicro, dataDiag,switch,textoPlano
 	try:
-		jsonDatos['NumeroRegistro']=ruta[12:].replace(".txt.html", "")
-				
-		#VALIDAR SI EXISTE HOSTORIA CLINCICA
-		if len(lista)>0:
-			if lista[1].isdigit():
-				jsonDatos['HistoriaClinica']=lista[1]
+		
+		if ruta.endswith(".html"):
+
+			#RECIBE '../informes-patologia-htlm/c02/c00.txt.html' -> cortar -> final -> c02
+			# numreg=ruta[34:]
+			numreg=ruta.lower()
+			# print "NUMERO REGISTRO: ",numreg
+			jsonDatos['NumeroRegistro']=numreg.replace(".txt.html", "")
+			#VALIDAR SI EXISTE HOSTORIA CLINCICA
+			if len(lista)>0:
+				if lista[1].isdigit():
+					jsonDatos['HistoriaClinica']=lista[1]
+				else:
+					jsonDatos['HistoriaClinica']=''
 			else:
 				jsonDatos['HistoriaClinica']=''
-		else:
-			jsonDatos['HistoriaClinica']=''
 
 
-		#Se Agregan al diccionario Eliminando el titulo "Desc Macro...", etc.
-		jsonDatos['DescMacro']=dataMacro[25:]
-		jsonDatos['DescMicro']=dataMicro[25:]
-		jsonDatos['DescDiagnostico']=dataDiag[13:]
-		jsonDatos['Texto']=textoPlano
-		
-		# lista=[]
-		# switch=0
-		# dataDiag=dataMicro=dataMacro=textoPlano=""
-		print "==> Datos cargados ..OK"
-		# print "NR..>",jsonDatos['NumeroRegistro']
-		# print "HC..>",jsonDatos['HistoriaClinica']
-		# print "MACRO..>",jsonDatos['DescMacro']
-		# print "MiCRO..>",jsonDatos['DescMicro']
-		# print "Diag..>",jsonDatos['DescDiagnostico']
+			#Se Agregan al diccionario Eliminando el titulo "Desc Macro...", etc.
+			jsonDatos['DescMacro']=dataMacro[25:]
+			jsonDatos['DescMicro']=dataMicro[25:]
+			jsonDatos['DescDiagnostico']=dataDiag[13:]
+			jsonDatos['Texto']=textoPlano
+			
+			## lista=[]
+			## switch=0
+			## dataDiag=dataMicro=dataMacro=textoPlano=""
+			# print "==> Datos cargados ..OK"
+			# print "NR..>",jsonDatos['NumeroRegistro']
+			# print "HC..>",jsonDatos['HistoriaClinica']
+			# print "MACRO..>",jsonDatos['DescMacro']
+			# print "MiCRO..>",jsonDatos['DescMicro']
+			# print "Diag..>",jsonDatos['DescDiagnostico']
 
 	except IndexError, e:
-		print "ENTRO en IndexError", lista, jsonDatos['NumeroRegistro']
+		None
+		# print "ENTRO en IndexError", lista, jsonDatos['NumeroRegistro']
 			
 #Se obtiene el numero de registro
 def getNumeroRegistro():
@@ -145,24 +153,25 @@ def getHTML():
 def leerArchivo(ruta):
 	global informe
 	informe=ruta
-	print "==> Leyendo archivo: ..OK"
+	# print "==> Leyendo archivo: ..OK"
 	return informe
 
-def escribirArchivo(folder):
+def escribirArchivo(folder, folder_txt):
 	global textoPlano, jsonDatos
 	#RECIBE '../informesEnTXT/c02' -> cortar -> final -> c02
-	if not os.path.exists('../informesEnTXT/'+folder[22:]):
+	# print "ESTE FOLDER",folder
+	if not os.path.exists(folder_txt+"/"+folder):
 		try:
-        		os.makedirs('../informesEnTXT/'+folder[22:])
-	except OSError as exc: # Guard against race condition
-		if exc.errno != errno.EEXIST:
-			raise
+			os.makedirs(folder_txt+"/"+folder)
+		except OSError as exc: # Guard against race condition
+			if exc.errno != errno.EEXIST:
+				raise
 	nr=jsonDatos['NumeroRegistro']+".txt"	
-	outputtxt=open('../informesEnTXT/'+folder[22:]+'/'+nr, 'w')
+	outputtxt=open(folder_txt+"/"+folder+'/'+nr, 'w')
 	outputtxt.write(textoPlano)
 	outputtxt.write("\n")
 	outputtxt.close()
-	print "==> Convirtiendo Archivo : ",nr+" ..OK"
+	# print "==> Convirtiendo Archivo : ",nr+" ..OK"
 
 if __name__ == '__main__':
 	None

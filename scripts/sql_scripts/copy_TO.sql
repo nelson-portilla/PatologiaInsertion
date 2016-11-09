@@ -1,0 +1,1 @@
+\COPY (select numeroregistro from muestra_html) TO '/home/registro/Vídeos/prueba_cargar/scripts/texto_plano/lista_cargados_a_BD.csv'

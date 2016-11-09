@@ -1,0 +1,22 @@
+Date: Agosto 2016
+Author: Nelson
+
+---REQUERIMIENTOS---
+Para ejecutar el script de organizar, se debe especificar: 
+1- 	El nombre de la carpeta la cual se va a sacar la lista.
+
+2- 	El folder donde estarán los archivos no deben contener subfolders, es decir, los archivos deben estar
+	a nivel 1 (no en subfolders)
+
+3-	Antes de correr el script, definir las rutas correctas dentro del bash: organizar.sh
+
+---EJECUCION----
+CORRER el script -Ubicado en el mismo directorio de script:
+sh organizar.sh nombre_carpeta
+
+CORRER scrip desde cualquier ubicacion:
+sh /home/registro/Vídeos/prueba_organizar/organizar.sh /home/registro/Vídeos/prueba_organizar/archivos2
+
+
+
+
