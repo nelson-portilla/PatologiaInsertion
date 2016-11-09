@@ -3,8 +3,7 @@ import progressBar as progress
 import subprocess
 global contador
 contador=[0]*100
-
-#FUNCION PARA AGRUPAR LOS ARCHIVOS PERDIDOS DEFINITIVOS POR AÑOS
+#Clase de emparejamiento entre master y listas_de_vacios para obtener lista de archivos faltantes.
 def contar(anno):
 	try:
 		contador[anno]+=1

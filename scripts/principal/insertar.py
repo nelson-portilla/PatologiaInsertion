@@ -95,15 +95,27 @@ def crearcsv(numArchivo, folder):
 def escribirCSV(main_folder):
 	global matriz
 	# print "MATRIZ: ",len (matriz)
+	
 	reg=open(main_folder+"/scripts/texto_plano/registro.csv", 'w')	
 	for idx, linea in enumerate(matriz):
-		if idx==len(matriz)-1:			
-			reg.write("|".join(linea))
-		else:			
+		if idx==len(matriz)-1:
+			if(isinstance(linea, basestring)):
+				reg.write("|".join(linea))
+			else:
+				#print "Entro: ", linea
+				#print "index", idx
+				#print "Tamanno", len(matriz)
+				reg.write("|".join(linea))
+				
+		else:
+			#print "index: ", idx
 			reg.write("|".join(linea))
 			reg.write("\n")
+	
 
 	reg.close()
+	
+	
 	# print "==> Creando Archivo CSV ..OK"
 
 
@@ -188,7 +200,8 @@ if __name__ == '__main__':
 			## totalRegistros=contarArchivos("../informes") **
 			totalRegistros=len(files)
 			crearMatriz(totalRegistros)
-			progress.printProgress(number, len(subfolders_name)-2, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
+			print subfolder
+			#progress.printProgress(number, len(subfolders_name)-2, prefix = 'Progress:', suffix = 'Complete', barLength = 50)
 			numArchivo=1
 			## File_list es: todos los archivos contenidos en el subfolder, ej: m16-008.txt.html
 			for file in files_list:
@@ -200,6 +213,7 @@ if __name__ == '__main__':
 					file_completo=os.path.join(folder_principal,subfolder,file)				
 					## Dado que pueden existir archivos con otro formato, solo nos interesa html
 					if file.endswith(".html"):
+						print file
 						filedata=open(file_completo, 'r').read()
 						extraerDatos(filedata, file, subfolder, folder_txt)
 						##Crearcsv retorna TRUE si hay vacios.

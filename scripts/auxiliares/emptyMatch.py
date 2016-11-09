@@ -85,6 +85,7 @@ def buscarenvaciosmaster(nombre):
 		sys.exit(1)
 
 
+
 if __name__ == '__main__':
 	p = subprocess.Popen(['wc', '-l', '../listas_de_vacios/NO_estan_en_master.txt'], stdout=subprocess.PIPE, 
                                           stderr=subprocess.PIPE)

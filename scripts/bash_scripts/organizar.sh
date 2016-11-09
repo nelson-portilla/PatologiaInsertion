@@ -12,8 +12,6 @@ carpeta=$1
 echo "Creando lista de archivos de la carpeta: $carpeta \n"
 ls $carpeta > $rutalistado
 
-
-
 ################ 	PROCESO DE EJECUCION DEL SCRIPT PYTHON          #############################
 
 #Definir las rutas antes de correr el script:
